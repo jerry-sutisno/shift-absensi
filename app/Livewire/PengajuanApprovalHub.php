@@ -57,6 +57,17 @@ class PengajuanApprovalHub extends Component
 
     public function selectItem(string $type, int $id): void
     {
+        if ($type === 'TUKAR_SHIFT') {
+            $item = TukarShift::findOrFail($id);
+            $this->authorize('view', $item);
+        } elseif ($type === 'LEMBUR') {
+            $item = Lembur::findOrFail($id);
+            $this->authorize('view', $item);
+        } elseif ($type === 'PENGAJUAN') {
+            $item = Pengajuan::findOrFail($id);
+            $this->authorize('view', $item);
+        }
+
         $this->selectedType = $type;
         $this->selectedId = $id;
     }
@@ -66,8 +77,9 @@ class PengajuanApprovalHub extends Component
         $this->reset(['id_jadwal_pemohon', 'id_pengganti', 'id_jadwal_pengganti', 'alasan_tukar']);
         $this->isTukarShiftModalOpen = true;
 
-        // Auto-select first upcoming schedule of current user
+        // Auto-select first upcoming schedule of current user (must be PUBLISHED)
         $firstJadwal = JadwalShift::where('id_karyawan', Auth::user()->id_karyawan)
+            ->where('status', 'PUBLISHED')
             ->where('tanggal', '>=', now('Asia/Jakarta')->toDateString())
             ->orderBy('tanggal')
             ->first();
@@ -261,6 +273,7 @@ class PengajuanApprovalHub extends Component
 
             $mySchedules = JadwalShift::with('shift')
                 ->where('id_karyawan', Auth::user()->id_karyawan)
+                ->where('status', 'PUBLISHED')
                 ->where('tanggal', '>=', now('Asia/Jakarta')->toDateString())
                 ->orderBy('tanggal')
                 ->limit(14)
@@ -269,6 +282,7 @@ class PengajuanApprovalHub extends Component
             if ($this->id_pengganti) {
                 $partnerSchedules = JadwalShift::with('shift')
                     ->where('id_karyawan', $this->id_pengganti)
+                    ->where('status', 'PUBLISHED')
                     ->where('tanggal', '>=', now('Asia/Jakarta')->toDateString())
                     ->orderBy('tanggal')
                     ->limit(14)

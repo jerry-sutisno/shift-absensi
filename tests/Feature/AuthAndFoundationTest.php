@@ -125,29 +125,20 @@ class AuthAndFoundationTest extends TestCase
         $oprLgs = User::where('id_karyawan', 'EMP-0025')->first(); // LGS Operator
 
         // Create dummy draft and published schedules
-        $draftSchedulePrd = JadwalShift::create([
-            'id_karyawan' => $oprPrd->id_karyawan,
-            'tanggal' => '2026-11-01',
-            'kode_shift' => 'S1',
-            'sumber' => 'MANUAL',
-            'status' => 'DRAFT',
-        ]);
+        $draftSchedulePrd = JadwalShift::updateOrCreate(
+            ['id_karyawan' => $oprPrd->id_karyawan, 'tanggal' => '2026-11-01'],
+            ['kode_shift' => 'S1', 'sumber' => 'MANUAL', 'status' => 'DRAFT']
+        );
 
-        $publishedSchedulePrd = JadwalShift::create([
-            'id_karyawan' => $oprPrd->id_karyawan,
-            'tanggal' => '2026-11-02',
-            'kode_shift' => 'S2',
-            'sumber' => 'MANUAL',
-            'status' => 'PUBLISHED',
-        ]);
+        $publishedSchedulePrd = JadwalShift::updateOrCreate(
+            ['id_karyawan' => $oprPrd->id_karyawan, 'tanggal' => '2026-11-02'],
+            ['kode_shift' => 'S2', 'sumber' => 'MANUAL', 'status' => 'PUBLISHED']
+        );
 
-        $publishedScheduleLgs = JadwalShift::create([
-            'id_karyawan' => $oprLgs->id_karyawan,
-            'tanggal' => '2026-11-01',
-            'kode_shift' => 'GS',
-            'sumber' => 'MANUAL',
-            'status' => 'PUBLISHED',
-        ]);
+        $publishedScheduleLgs = JadwalShift::updateOrCreate(
+            ['id_karyawan' => $oprLgs->id_karyawan, 'tanggal' => '2026-11-01'],
+            ['kode_shift' => 'GS', 'sumber' => 'MANUAL', 'status' => 'PUBLISHED']
+        );
 
         // 1. Admin HR can view all
         $this->assertTrue(Gate::forUser($admin)->allows('view', $draftSchedulePrd));

@@ -76,6 +76,16 @@ class ScheduleGeneratorService
                 $hariKe = (($diffDays % $panjangSiklus) + $panjangSiklus) % $panjangSiklus + 1;
 
                 foreach ($karyawanList as $karyawan) {
+                    $existing = JadwalShift::where('id_karyawan', $karyawan->id_karyawan)
+                        ->where('tanggal', $dateStr)
+                        ->first();
+
+                    // Jangan timpa jadwal yang sudah PUBLISHED atau hasil TUKAR_SHIFT / MANUAL
+                    if ($existing && ($existing->status === 'PUBLISHED' || in_array($existing->sumber, ['MANUAL', 'TUKAR_SHIFT']))) {
+                        $countSkipped++;
+                        continue;
+                    }
+
                     $kodeShift = 'OFF';
 
                     if ($karyawan->id_grup === null) {
@@ -91,7 +101,7 @@ class ScheduleGeneratorService
                     }
 
                     // BR-02 & BR-09: Satu jadwal per tanggal, status DRAFT
-                    $jadwal = JadwalShift::updateOrCreate(
+                    JadwalShift::updateOrCreate(
                         [
                             'id_karyawan' => $karyawan->id_karyawan,
                             'tanggal' => $dateStr,
@@ -105,11 +115,7 @@ class ScheduleGeneratorService
                         ]
                     );
 
-                    if ($jadwal->wasRecentlyCreated || $jadwal->wasChanged()) {
-                        $countGenerated++;
-                    } else {
-                        $countSkipped++;
-                    }
+                    $countGenerated++;
                 }
             }
 

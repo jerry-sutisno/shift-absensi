@@ -147,6 +147,9 @@ class MasterDataAndRotationTest extends TestCase
 
         $currentDetail->refresh();
         $this->assertNotEquals($initialShift, $currentDetail->kode_shift);
+
+        // Revert to maintain database consistency
+        $currentDetail->update(['kode_shift' => $initialShift]);
     }
 
     public function test_schedule_generator_service_creates_draft_and_respects_rules(): void

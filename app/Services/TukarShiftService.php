@@ -248,5 +248,28 @@ class TukarShiftService
                 );
             }
         }
+
+        // Cek jadwal hari berikutnya
+        $tglBerikutnya = $jadwalLama->tanggal->copy()->addDay()->toDateString();
+        $jadwalBerikut = JadwalShift::with('shift')
+            ->where('id_karyawan', $karyawan->id_karyawan)
+            ->where('tanggal', $tglBerikutnya)
+            ->first();
+
+        if ($jadwalBerikut && $jadwalBerikut->shift && !$jadwalBerikut->shift->is_libur) {
+            $jamPulangBaru = Carbon::parse($jadwalLama->tanggal->toDateString() . ' ' . $shiftBaru->jam_pulang);
+            if ($shiftBaru->lintas_hari) {
+                $jamPulangBaru->addDay();
+            }
+
+            $jamMasukBerikut = Carbon::parse($tglBerikutnya . ' ' . $jadwalBerikut->shift->jam_masuk);
+
+            $istirahatJamBerikut = $jamPulangBaru->diffInHours($jamMasukBerikut, false);
+            if ($istirahatJamBerikut >= 0 && $istirahatJamBerikut < $minIstirahat) {
+                throw new InvalidArgumentException(
+                    "Jeda istirahat untuk {$karyawan->nama_karyawan} ke shift berikutnya hanya {$istirahatJamBerikut} jam (minimal {$minIstirahat} jam sesuai regulasi Depnaker)."
+                );
+            }
+        }
     }
 }

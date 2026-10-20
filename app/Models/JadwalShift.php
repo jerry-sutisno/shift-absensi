@@ -57,4 +57,29 @@ class JadwalShift extends Model
     {
         return $this->status === 'PUBLISHED';
     }
+
+    public function scopePublished($query)
+    {
+        return $query->where('status', 'PUBLISHED');
+    }
+
+    public function scopeVisibleFor($query, User $user)
+    {
+        if ($user->isAdminHr() || $user->isDirektur()) {
+            return $query;
+        }
+
+        if ($user->isHod() || $user->isSupervisor()) {
+            return $query->whereHas('karyawan', function ($q) use ($user) {
+                $q->where('id_departemen', $user->karyawan?->id_departemen);
+            });
+        }
+
+        if ($user->isOperator()) {
+            return $query->where('id_karyawan', $user->id_karyawan)
+                ->where('status', 'PUBLISHED');
+        }
+
+        return $query->whereRaw('1 = 0');
+    }
 }

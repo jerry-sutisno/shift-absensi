@@ -47,6 +47,8 @@ class KoreksiAbsensiManager extends Component
         $this->selectedAbsensiId = $id;
         $this->selectedAbsensi = Absensi::with(['karyawan.departemen', 'jadwal.shift'])->findOrFail($id);
 
+        $this->authorize('koreksi', $this->selectedAbsensi);
+
         $this->waktu_masuk = $this->selectedAbsensi->waktu_masuk ? $this->selectedAbsensi->waktu_masuk->format('Y-m-d\TH:i') : '';
         $this->waktu_pulang = $this->selectedAbsensi->waktu_pulang ? $this->selectedAbsensi->waktu_pulang->format('Y-m-d\TH:i') : '';
         $this->status = $this->selectedAbsensi->status;
@@ -59,6 +61,10 @@ class KoreksiAbsensiManager extends Component
 
     public function simpanKoreksi(AttendanceService $service): void
     {
+        if ($this->selectedAbsensi) {
+            $this->authorize('koreksi', $this->selectedAbsensi);
+        }
+
         $this->validate([
             'alasan' => 'required|min:5',
             'status' => 'required|in:HADIR,TERLAMBAT,ALPA,IZIN,SAKIT,CUTI,LIBUR',
@@ -92,6 +98,7 @@ class KoreksiAbsensiManager extends Component
         $user = Auth::user();
 
         $absensiList = Absensi::with(['karyawan.departemen', 'jadwal.shift', 'korektor'])
+            ->visibleFor($user)
             ->when($this->filterTanggal, fn($q) => $q->where('tanggal_shift', $this->filterTanggal))
             ->when($this->filterDepartemen, function ($q) {
                 $q->whereHas('karyawan', fn($sub) => $sub->where('id_departemen', $this->filterDepartemen));

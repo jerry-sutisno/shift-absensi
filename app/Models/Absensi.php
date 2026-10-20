@@ -52,4 +52,23 @@ class Absensi extends Model
     {
         return $this->belongsTo(User::class, 'dikoreksi_oleh', 'id_user');
     }
+
+    public function scopeVisibleFor($query, User $user)
+    {
+        if ($user->isAdminHr() || $user->isDirektur()) {
+            return $query;
+        }
+
+        if ($user->isHod() || $user->isSupervisor()) {
+            return $query->whereHas('karyawan', function ($q) use ($user) {
+                $q->where('id_departemen', $user->karyawan?->id_departemen);
+            });
+        }
+
+        if ($user->isOperator()) {
+            return $query->where('id_karyawan', $user->id_karyawan);
+        }
+
+        return $query->whereRaw('1 = 0');
+    }
 }
