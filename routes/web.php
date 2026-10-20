@@ -19,5 +19,8 @@ Route::middleware('auth')->group(function () {
         return view('dashboard');
     })->name('dashboard');
 
+    Route::get('/master/karyawan', \App\Livewire\MasterKaryawan::class)->name('master.karyawan');
+    Route::get('/pola-rotasi', \App\Livewire\PolaRotasiManager::class)->name('pola.rotasi');
+
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });

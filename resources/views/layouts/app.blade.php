@@ -119,11 +119,11 @@
                     @if ($user?->isAdminHr())
                         <div class="flex flex-col gap-1 pt-2 border-t border-slate-100">
                             <span class="px-3 pb-2 text-[11px] font-bold uppercase tracking-wider text-slate-500">Konfigurasi & Master</span>
-                            <a href="#" class="h-10 px-3.5 rounded-xl flex items-center gap-3 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors">
+                            <a href="{{ route('master.karyawan') }}" class="h-10 px-3.5 rounded-xl flex items-center gap-3 text-sm font-medium transition-colors {{ $currentRoute === 'master.karyawan' ? 'bg-[#0F4C81] text-white font-semibold shadow-xs' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
                                 <span class="material-symbols-outlined text-[20px]">badge</span>
                                 <span>Data Karyawan</span>
                             </a>
-                            <a href="#" class="h-10 px-3.5 rounded-xl flex items-center gap-3 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors">
+                            <a href="{{ route('pola.rotasi') }}" class="h-10 px-3.5 rounded-xl flex items-center gap-3 text-sm font-medium transition-colors {{ $currentRoute === 'pola.rotasi' ? 'bg-[#0F4C81] text-white font-semibold shadow-xs' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
                                 <span class="material-symbols-outlined text-[20px]">sync_alt</span>
                                 <span>Pola Rotasi</span>
                             </a>
@@ -188,34 +188,59 @@
 
         <!-- Main Content Area -->
         <div class="flex-1 lg:pl-72 flex flex-col min-h-screen">
-            <!-- Topbar Header -->
+            <!-- Topbar Header (Matches Stitch Layout) -->
             <header class="h-16 bg-white border-b border-slate-200 px-4 md:px-8 flex items-center justify-between sticky top-0 z-30 shadow-xs">
-                <div class="flex items-center gap-4">
+                <!-- Left: Mobile Menu + Global Search Input -->
+                <div class="flex items-center gap-4 flex-1 max-w-md">
                     <button @click="sidebarOpen = true" class="lg:hidden p-2 rounded-lg text-slate-600 hover:bg-slate-100">
                         <span class="material-symbols-outlined text-[24px]">menu</span>
                     </button>
-                    <div>
-                        <h1 class="text-base md:text-lg font-bold text-slate-900 leading-tight">
-                            @yield('page_title', 'Dashboard')
-                        </h1>
-                        <span class="text-xs text-slate-500">
-                            {{ $user?->karyawan?->departemen?->nama_departemen ?? 'Sistem Pabrik' }} &bull; {{ $user?->karyawan?->jabatan?->nama_jabatan ?? 'Staf' }}
+                    <div class="relative w-full max-w-xs hidden sm:block">
+                        <span class="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 flex items-center">
+                            <span class="material-symbols-outlined text-[18px]">search</span>
                         </span>
+                        <input 
+                            type="text" 
+                            placeholder="Cari NIK, Nama Operator..." 
+                            class="w-full h-9 pl-9 pr-3 rounded-lg bg-slate-100/80 border border-slate-200 text-xs text-slate-800 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#0F4C81] transition-all"
+                        >
                     </div>
                 </div>
 
-                <!-- Server Time & Quick Info -->
+                <!-- Center: Operational Plant & Shift Status Chip -->
+                <div class="hidden xl:flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100/90 border border-slate-200 text-xs text-slate-700">
+                    <span class="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
+                    <span class="font-semibold text-slate-900">Plant 1 - Karawang</span>
+                    <span class="text-slate-400">&bull;</span>
+                    <span class="text-slate-600 font-medium">Shift 1 Berjalan (07:00 - 15:00 WIB)</span>
+                </div>
+
+                <!-- Right: Clock, Notification, and User Badge -->
                 <div class="flex items-center gap-3">
-                    <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-xs font-mono text-slate-700">
+                    <div class="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-50 border border-slate-200 text-xs font-mono text-slate-700">
                         <span class="material-symbols-outlined text-[16px] text-[#0F4C81]">schedule</span>
-                        <span id="server-live-clock">{{ now('Asia/Jakarta')->format('d-m-Y H:i:s') }} WIB</span>
+                        <span id="server-live-clock">{{ now('Asia/Jakarta')->format('H:i:s') }} WIB</span>
                     </div>
 
-                    <div class="flex items-center gap-1">
-                        <button type="button" class="relative p-2 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors">
-                            <span class="material-symbols-outlined text-[22px]">notifications</span>
-                            <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-rose-500"></span>
-                        </button>
+                    <!-- Notification with Badge -->
+                    <button type="button" class="relative p-2 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors">
+                        <span class="material-symbols-outlined text-[22px]">notifications</span>
+                        <span class="absolute top-1 right-1 w-4 h-4 rounded-full bg-rose-500 text-white font-bold text-[10px] flex items-center justify-center">
+                            3
+                        </span>
+                    </button>
+
+                    <!-- Topbar Profile Summary -->
+                    <div class="flex items-center gap-2.5 pl-2 border-l border-slate-200">
+                        <div class="w-8 h-8 rounded-full bg-[#0F4C81] text-white flex items-center justify-center font-bold text-xs shrink-0">
+                            {{ substr(Auth::user()->nama, 0, 1) }}
+                        </div>
+                        <div class="hidden sm:flex flex-col text-left">
+                            <span class="font-bold text-xs text-slate-900 leading-tight">{{ Auth::user()->nama }}</span>
+                            <span class="text-[11px] text-slate-500 leading-tight">
+                                {{ Auth::user()->karyawan?->departemen?->nama_departemen ?? 'Sistem Pabrik' }}
+                            </span>
+                        </div>
                     </div>
                 </div>
             </header>
@@ -236,6 +261,7 @@
                     </div>
                 @endif
 
+                {{ $slot ?? '' }}
                 @yield('content')
             </main>
 
