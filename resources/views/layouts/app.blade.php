@@ -77,13 +77,13 @@
                                 <span class="material-symbols-outlined text-[22px]">calendar_month</span>
                                 <span>Jadwal Saya</span>
                             </a>
-                            <a href="#" class="h-11 px-3.5 rounded-xl flex items-center gap-3 text-sm font-semibold text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors">
+                            <a href="{{ route('absensi.koreksi') }}" class="h-11 px-3.5 rounded-xl flex items-center gap-3 text-sm font-semibold transition-colors {{ $currentRoute === 'absensi.koreksi' ? 'bg-[#0F4C81] text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
                                 <span class="material-symbols-outlined text-[22px]">fact_check</span>
                                 <span>Riwayat Absensi</span>
                             </a>
-                            <a href="#" class="h-11 px-3.5 rounded-xl flex items-center gap-3 text-sm font-semibold text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors">
+                            <a href="{{ route('pengajuan.approval') }}" class="h-11 px-3.5 rounded-xl flex items-center gap-3 text-sm font-semibold transition-colors {{ $currentRoute === 'pengajuan.approval' ? 'bg-[#0F4C81] text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
                                 <span class="material-symbols-outlined text-[22px]">assignment</span>
-                                <span>Pengajuan Saya</span>
+                                <span>Pengajuan &amp; Tukar Shift</span>
                             </a>
                         @else
                             <a href="{{ route('dashboard') }}" class="h-11 px-3.5 rounded-xl flex items-center gap-3 text-sm font-semibold transition-colors {{ $currentRoute === 'dashboard' ? 'bg-[#0F4C81] text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
@@ -94,16 +94,16 @@
                                 <span class="material-symbols-outlined text-[22px]">calendar_month</span>
                                 <span>Kalender Jadwal</span>
                             </a>
-                            <a href="#" class="h-11 px-3.5 rounded-xl flex items-center gap-3 text-sm font-semibold text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors">
+                            <a href="{{ route('absensi.koreksi') }}" class="h-11 px-3.5 rounded-xl flex items-center gap-3 text-sm font-semibold transition-colors {{ $currentRoute === 'absensi.koreksi' ? 'bg-[#0F4C81] text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
                                 <span class="material-symbols-outlined text-[22px]">fact_check</span>
                                 <span>Monitoring Absensi</span>
                             </a>
-                            <a href="#" class="h-11 px-3.5 rounded-xl flex items-center gap-3 text-sm font-semibold text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors">
+                            <a href="{{ route('pengajuan.approval') }}" class="h-11 px-3.5 rounded-xl flex items-center gap-3 text-sm font-semibold transition-colors {{ $currentRoute === 'pengajuan.approval' ? 'bg-[#0F4C81] text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
                                 <span class="material-symbols-outlined text-[22px]">approval</span>
                                 <span>Antrean Approval</span>
                             </a>
-                            @if ($user?->isSupervisor())
-                                <a href="#" class="h-11 px-3.5 rounded-xl flex items-center gap-3 text-sm font-semibold text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors">
+                            @if ($user?->isSupervisor() || $user?->isAdminHr() || $user?->isHod())
+                                <a href="{{ route('logbook') }}" class="h-11 px-3.5 rounded-xl flex items-center gap-3 text-sm font-semibold transition-colors {{ $currentRoute === 'logbook' ? 'bg-[#0F4C81] text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
                                     <span class="material-symbols-outlined text-[22px]">edit_note</span>
                                     <span>Logbook Shift</span>
                                 </a>
@@ -126,6 +126,10 @@
                             <a href="{{ route('pola.rotasi') }}" class="h-10 px-3.5 rounded-xl flex items-center gap-3 text-sm font-medium transition-colors {{ $currentRoute === 'pola.rotasi' ? 'bg-[#0F4C81] text-white font-semibold shadow-xs' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
                                 <span class="material-symbols-outlined text-[20px]">sync_alt</span>
                                 <span>Pola Rotasi</span>
+                            </a>
+                            <a href="{{ route('hari.libur') }}" class="h-10 px-3.5 rounded-xl flex items-center gap-3 text-sm font-medium transition-colors {{ $currentRoute === 'hari.libur' ? 'bg-[#0F4C81] text-white font-semibold shadow-xs' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
+                                <span class="material-symbols-outlined text-[20px]">calendar_today</span>
+                                <span>Hari Libur</span>
                             </a>
                             <a href="#" class="h-10 px-3.5 rounded-xl flex items-center gap-3 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors">
                                 <span class="material-symbols-outlined text-[20px]">settings</span>
@@ -222,13 +226,18 @@
                         <span id="server-live-clock">{{ now('Asia/Jakarta')->format('H:i:s') }} WIB</span>
                     </div>
 
-                    <!-- Notification with Badge -->
-                    <button type="button" class="relative p-2 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors">
+                    <!-- Notification with Dynamic Badge -->
+                    @php
+                        $unreadNotifs = \App\Services\NotificationService::unreadCount(Auth::id());
+                    @endphp
+                    <a href="{{ route('notifikasi') }}" title="Notifikasi Sistem" class="relative p-2 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors">
                         <span class="material-symbols-outlined text-[22px]">notifications</span>
-                        <span class="absolute top-1 right-1 w-4 h-4 rounded-full bg-rose-500 text-white font-bold text-[10px] flex items-center justify-center">
-                            3
-                        </span>
-                    </button>
+                        @if ($unreadNotifs > 0)
+                            <span class="absolute top-1 right-1 min-w-[16px] h-4 px-1 rounded-full bg-rose-500 text-white font-bold text-[10px] flex items-center justify-center">
+                                {{ $unreadNotifs > 99 ? '99+' : $unreadNotifs }}
+                            </span>
+                        @endif
+                    </a>
 
                     <!-- Topbar Profile Summary -->
                     <div class="flex items-center gap-2.5 pl-2 border-l border-slate-200">
