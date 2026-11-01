@@ -27,17 +27,64 @@ class KioskPresensi extends Component
     public ?string $errorMessage = null;
     public ?string $selectedNama = null;
     public ?string $selectedDepartemen = null;
+    public ?string $selectedJabatan = null;
+    public ?string $selectedRegu = null;
+    public ?string $selectedShiftHariIni = null;
+    public ?string $statusAbsenHariIni = null;
 
     public function updatedIdKaryawan($val): void
     {
         $this->errorMessage = null;
-        $karyawan = Karyawan::with('departemen')->find(trim($val));
+        $id = trim($val);
+        if (empty($id)) {
+            $this->selectedNama = null;
+            $this->selectedDepartemen = null;
+            $this->selectedJabatan = null;
+            $this->selectedRegu = null;
+            $this->selectedShiftHariIni = null;
+            $this->statusAbsenHariIni = null;
+            return;
+        }
+
+        $karyawan = Karyawan::with(['departemen', 'jabatan', 'grup'])->find($id);
         if ($karyawan) {
             $this->selectedNama = $karyawan->nama_karyawan;
             $this->selectedDepartemen = $karyawan->departemen?->nama_departemen;
+            $this->selectedJabatan = $karyawan->jabatan?->nama_jabatan;
+            $this->selectedRegu = $karyawan->grup?->nama_grup ?? 'Grup A';
+
+            $today = now('Asia/Jakarta')->toDateString();
+            $jadwal = JadwalShift::with('shift')
+                ->where('id_karyawan', $karyawan->id_karyawan)
+                ->where('tanggal', $today)
+                ->first();
+
+            $this->selectedShiftHariIni = $jadwal?->shift 
+                ? "{$jadwal->shift->kode_shift} ({$jadwal->shift->jam_masuk} - {$jadwal->shift->jam_pulang})" 
+                : 'S1 (07:00 - 15:00)';
+
+            $absensi = Absensi::where('id_karyawan', $karyawan->id_karyawan)
+                ->where('tanggal_shift', $today)
+                ->first();
+
+            if ($absensi) {
+                if ($absensi->waktu_pulang) {
+                    $this->statusAbsenHariIni = 'Sudah Pulang (' . Carbon::parse($absensi->waktu_pulang)->format('H:i') . ')';
+                } elseif ($absensi->waktu_masuk) {
+                    $this->statusAbsenHariIni = 'Sudah Masuk (' . Carbon::parse($absensi->waktu_masuk)->format('H:i') . ')';
+                } else {
+                    $this->statusAbsenHariIni = 'Belum Absen';
+                }
+            } else {
+                $this->statusAbsenHariIni = 'Belum Absen';
+            }
         } else {
             $this->selectedNama = null;
             $this->selectedDepartemen = null;
+            $this->selectedJabatan = null;
+            $this->selectedRegu = null;
+            $this->selectedShiftHariIni = null;
+            $this->statusAbsenHariIni = null;
         }
     }
 
@@ -76,6 +123,10 @@ class KioskPresensi extends Component
         $this->errorMessage = null;
         $this->selectedNama = null;
         $this->selectedDepartemen = null;
+        $this->selectedJabatan = null;
+        $this->selectedRegu = null;
+        $this->selectedShiftHariIni = null;
+        $this->statusAbsenHariIni = null;
     }
 
     /**
@@ -263,10 +314,18 @@ class KioskPresensi extends Component
         }
 
         // Demo sample operators for quick punch in/out
-        $demoOperators = Karyawan::with('departemen')
+        $demoOperators = Karyawan::with(['departemen', 'jabatan', 'grup'])
             ->where('status_karyawan', 'AKTIF')
             ->whereHas('jabatan', fn($j) => $j->where('level_jabatan', 'OPERATOR'))
             ->take(6)
+            ->get();
+
+        // Presensi terkini (live stream feed)
+        $recentAbsensi = Absensi::with(['karyawan.departemen', 'jadwal.shift'])
+            ->whereDate('tanggal_shift', $now->toDateString())
+            ->whereNotNull('waktu_masuk')
+            ->latest('updated_at')
+            ->take(3)
             ->get();
 
         return view('livewire.kiosk-presensi', [
@@ -275,6 +334,7 @@ class KioskPresensi extends Component
             'currentShift' => $currentShift,
             'shifts' => $shifts,
             'demoOperators' => $demoOperators,
+            'recentAbsensi' => $recentAbsensi,
         ]);
     }
 }
