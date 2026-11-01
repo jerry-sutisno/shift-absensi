@@ -19,6 +19,26 @@
             <span class="px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-medium">
                 Periode: {{ $carbonMonth->translatedFormat('F Y') }}
             </span>
+
+            <!-- Tombol Export Excel (F-09) -->
+            <button 
+                wire:click="exportExcel" 
+                type="button" 
+                class="h-9 px-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs transition-colors duration-150 inline-flex items-center gap-1.5 shadow-sm cursor-pointer"
+            >
+                <span class="material-symbols-outlined text-[18px]">table_view</span>
+                <span>Export Excel</span>
+            </button>
+
+            <!-- Tombol Export PDF (F-09) -->
+            <button 
+                wire:click="exportPdf" 
+                type="button" 
+                class="h-9 px-3.5 rounded-xl bg-[#0F4C81] hover:bg-[#00355F] text-white font-medium text-xs transition-colors duration-150 inline-flex items-center gap-1.5 shadow-sm cursor-pointer"
+            >
+                <span class="material-symbols-outlined text-[18px]">picture_as_pdf</span>
+                <span>Export PDF</span>
+            </button>
         </div>
     </div>
 

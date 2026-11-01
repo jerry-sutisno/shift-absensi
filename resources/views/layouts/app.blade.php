@@ -144,6 +144,17 @@
                 </div>
             </div>
 
+            <!-- Mode Kiosk Shortcut -->
+            <div class="px-4 py-2 border-t border-slate-100 bg-slate-50/70">
+                <a href="{{ route('kiosk.absensi') }}" target="_blank" class="h-9 px-3 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 flex items-center justify-between text-xs font-semibold transition-colors shadow-2xs">
+                    <span class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-[18px] text-[#0F4C81]">tablet_mac</span>
+                        <span>Mode Kiosk Tablet</span>
+                    </span>
+                    <span class="material-symbols-outlined text-[15px] text-slate-400">open_in_new</span>
+                </a>
+            </div>
+
             <!-- User Profile Widget (Sidebar Footer) -->
             <div class="p-3.5 border-t border-slate-200 bg-white">
                 <div class="flex items-center justify-between">

@@ -303,4 +303,21 @@ class OperationalFeaturesTest extends TestCase
         $hl->delete();
         $this->assertDatabaseMissing('hari_libur', ['tanggal' => $tgl]);
     }
+
+    /**
+     * 7. EXPORT REKAP BULANAN EXCEL & PDF (F-09 & FR-20)
+     */
+    public function test_rekap_bulanan_can_export_excel_and_pdf(): void
+    {
+        \Livewire\Livewire::actingAs($this->adminHr)
+            ->test(\App\Livewire\RekapBulanan::class)
+            ->call('exportExcel')
+            ->assertFileDownloaded('rekap_absensi_' . now('Asia/Jakarta')->format('Y-m') . '.csv');
+
+        \Livewire\Livewire::actingAs($this->adminHr)
+            ->test(\App\Livewire\RekapBulanan::class)
+            ->call('exportPdf')
+            ->assertFileDownloaded('rekap_absensi_' . now('Asia/Jakarta')->format('Y-m') . '.pdf');
+    }
 }
+

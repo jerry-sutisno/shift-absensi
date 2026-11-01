@@ -10,6 +10,9 @@ Route::middleware('guest')->group(function () {
     Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 });
 
+// Kiosk Mode Terminal Presensi Mandiri (F-05 & FR-12)
+Route::get('/kiosk', \App\Livewire\KioskPresensi::class)->name('kiosk.absensi');
+
 // Authenticated Routes
 Route::middleware('auth')->group(function () {
     Route::get('/', function () {
