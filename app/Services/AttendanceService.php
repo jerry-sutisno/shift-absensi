@@ -239,6 +239,14 @@ class AttendanceService
 
         return DB::transaction(function () use ($idAbsensi, $dataKoreksi, $user, $alasan) {
             $absensi = Absensi::with(['karyawan', 'jadwal.shift'])->findOrFail($idAbsensi);
+
+            // Validasi otorisasi koreksi absensi (BR-12)
+            if (!$user->isAdminHr()) {
+                if (!$user->isSupervisor() || !$user->karyawan || $user->karyawan->id_departemen !== $absensi->karyawan?->id_departemen) {
+                    throw new InvalidArgumentException('Anda tidak memiliki wewenang untuk mengoreksi absensi karyawan di luar departemen Anda.');
+                }
+            }
+
             $dataLama = $absensi->toArray();
 
             // Hitung menit_kerja jika waktu_masuk dan waktu_pulang ada

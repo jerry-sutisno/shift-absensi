@@ -10,6 +10,9 @@ class TukarShiftPolicy
     public function before(User $user, string $ability): ?bool
     {
         if ($user->isAdminHr()) {
+            if (in_array($ability, ['approveSupervisor', 'responPengganti'])) {
+                return false;
+            }
             return true;
         }
         return null;
@@ -48,6 +51,11 @@ class TukarShiftPolicy
     public function approveSupervisor(User $user, TukarShift $tukar): bool
     {
         if ($tukar->status !== 'MENUNGGU_SUPERVISOR') {
+            return false;
+        }
+
+        // Supervisor yang bertukar shift tidak boleh menyetujui permohonan yang melibatkan dirinya (Rule 12)
+        if ($user->id_karyawan === $tukar->id_pemohon || $user->id_karyawan === $tukar->id_pengganti) {
             return false;
         }
 

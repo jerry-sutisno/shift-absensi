@@ -10,6 +10,9 @@ class PengajuanPolicy
     public function before(User $user, string $ability): ?bool
     {
         if ($user->isAdminHr()) {
+            if ($ability === 'approve') {
+                return false;
+            }
             return true;
         }
         return null;
@@ -47,6 +50,11 @@ class PengajuanPolicy
 
     public function approve(User $user, Pengajuan $pengajuan): bool
     {
+        // Approver tidak boleh menyetujui permohonan miliknya sendiri (Rule 12)
+        if ($user->id_karyawan === $pengajuan->id_karyawan) {
+            return false;
+        }
+
         $userDept = $user->karyawan?->id_departemen;
         $pengajuanDept = $pengajuan->karyawan?->id_departemen;
 

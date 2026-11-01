@@ -4,12 +4,16 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use Livewire\WithPagination;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
 use App\Models\Absensi;
 use App\Models\Departemen;
 use App\Services\AttendanceService;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
+#[Layout('layouts.app')]
+#[Title('Koreksi Absensi Manual')]
 class KoreksiAbsensiManager extends Component
 {
     use WithPagination;
@@ -36,8 +40,9 @@ class KoreksiAbsensiManager extends Component
     {
         $this->filterTanggal = now('Asia/Jakarta')->toDateString();
 
+        /** @var \App\Models\User|null $user */
         $user = Auth::user();
-        if ($user && $user->karyawan && !$user->isAdminHr()) {
+        if ($user && $user->karyawan && !$user->isAdminHr() && !$user->isDirektur()) {
             $this->filterDepartemen = $user->karyawan->id_departemen;
         }
     }
@@ -61,9 +66,8 @@ class KoreksiAbsensiManager extends Component
 
     public function simpanKoreksi(AttendanceService $service): void
     {
-        if ($this->selectedAbsensi) {
-            $this->authorize('koreksi', $this->selectedAbsensi);
-        }
+        $this->selectedAbsensi = Absensi::with('karyawan')->findOrFail($this->selectedAbsensiId);
+        $this->authorize('koreksi', $this->selectedAbsensi);
 
         $this->validate([
             'alasan' => 'required|min:5',
@@ -84,7 +88,9 @@ class KoreksiAbsensiManager extends Component
                 'metode_pulang' => 'MANUAL',
             ];
 
-            $service->koreksiAbsensi($this->selectedAbsensiId, $dataKoreksi, Auth::user(), $this->alasan);
+            /** @var \App\Models\User $currentUser */
+            $currentUser = Auth::user();
+            $service->koreksiAbsensi($this->selectedAbsensiId, $dataKoreksi, $currentUser, $this->alasan);
 
             session()->flash('success', "Absensi karyawan {$this->selectedAbsensi->karyawan->nama_karyawan} berhasil dikoreksi dan dicatat di audit log.");
             $this->isModalOpen = false;
@@ -95,9 +101,10 @@ class KoreksiAbsensiManager extends Component
 
     public function render()
     {
+        /** @var \App\Models\User|null $user */
         $user = Auth::user();
 
-        $absensiList = Absensi::with(['karyawan.departemen', 'jadwal.shift', 'korektor'])
+        $absensiList = Absensi::with(['karyawan.departemen', 'jadwal.shift', 'korektor.karyawan'])
             ->visibleFor($user)
             ->when($this->filterTanggal, fn($q) => $q->where('tanggal_shift', $this->filterTanggal))
             ->when($this->filterDepartemen, function ($q) {
@@ -116,6 +123,6 @@ class KoreksiAbsensiManager extends Component
         return view('livewire.koreksi-absensi-manager', [
             'absensiList' => $absensiList,
             'departemens' => Departemen::all(),
-        ])->layout('layouts.app', ['title' => 'Koreksi Absensi Manual']);
+        ]);
     }
 }

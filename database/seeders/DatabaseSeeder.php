@@ -206,12 +206,12 @@ class DatabaseSeeder extends Seeder
         $karyawanData = [
             // Admin HR (Personalia)
             [
-                'id' => 'EMP-0001', 'nama' => 'Budi Santoso', 'gender' => 'L', 'tgl' => '1988-04-12',
+                'id' => 'EMP-0001', 'nama' => 'Subani', 'gender' => 'L', 'tgl' => '1988-04-12',
                 'dept' => 'PRS', 'jabatan' => 'JAB-OPR-PRS', 'grup' => null, 'role' => 'ADMIN_HR'
             ],
             // Direktur Operasional
             [
-                'id' => 'EMP-0002', 'nama' => 'Ir. Hendra Gunawan', 'gender' => 'L', 'tgl' => '1975-02-20',
+                'id' => 'EMP-0002', 'nama' => 'Jerry', 'gender' => 'L', 'tgl' => '1975-02-20',
                 'dept' => 'PRS', 'jabatan' => 'JAB-DIR-01', 'grup' => null, 'role' => 'DIREKTUR'
             ],
             // HOD (5 Departemen)
@@ -220,7 +220,7 @@ class DatabaseSeeder extends Seeder
                 'dept' => 'PRS', 'jabatan' => 'JAB-HOD-PRS', 'grup' => null, 'role' => 'HOD'
             ],
             [
-                'id' => 'EMP-0004', 'nama' => 'Agus Setiawan', 'gender' => 'L', 'tgl' => '1980-11-05',
+                'id' => 'EMP-0004', 'nama' => 'Satrio', 'gender' => 'L', 'tgl' => '1980-11-05',
                 'dept' => 'PRD', 'jabatan' => 'JAB-HOD-PRD', 'grup' => null, 'role' => 'HOD'
             ],
             [
@@ -241,7 +241,7 @@ class DatabaseSeeder extends Seeder
                 'dept' => 'PRS', 'jabatan' => 'JAB-SPV-PRS', 'grup' => null, 'role' => 'SUPERVISOR'
             ],
             [
-                'id' => 'EMP-0009', 'nama' => 'Ahmad Fauzi', 'gender' => 'L', 'tgl' => '1989-01-25',
+                'id' => 'EMP-0009', 'nama' => 'Gilang', 'gender' => 'L', 'tgl' => '1989-01-25',
                 'dept' => 'PRD', 'jabatan' => 'JAB-SPV-PRD', 'grup' => null, 'role' => 'SUPERVISOR'
             ],
             [
@@ -258,7 +258,7 @@ class DatabaseSeeder extends Seeder
             ],
             // Operator Produksi - Grup A
             [
-                'id' => 'EMP-0013', 'nama' => 'Fajar Pratama', 'gender' => 'L', 'tgl' => '1996-03-11',
+                'id' => 'EMP-0013', 'nama' => 'Sarwan', 'gender' => 'L', 'tgl' => '1996-03-11',
                 'dept' => 'PRD', 'jabatan' => 'JAB-OPR-PRD', 'grup' => 'Grup A', 'role' => 'OPERATOR'
             ],
             [

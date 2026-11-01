@@ -4,6 +4,8 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use Livewire\WithPagination;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
 use App\Models\TukarShift;
 use App\Models\Lembur;
 use App\Models\Pengajuan;
@@ -12,9 +14,12 @@ use App\Models\JadwalShift;
 use App\Models\Departemen;
 use App\Services\TukarShiftService;
 use App\Services\OvertimeService;
+use App\Services\PengajuanService;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
+#[Layout('layouts.app')]
+#[Title('Pengajuan & Approval Operasional')]
 class PengajuanApprovalHub extends Component
 {
     use WithPagination;
@@ -47,9 +52,12 @@ class PengajuanApprovalHub extends Component
 
     public function mount(): void
     {
+        /** @var \App\Models\User|null $user */
         $user = Auth::user();
-        if ($user && $user->karyawan) {
+        if ($user && $user->karyawan && !$user->isAdminHr() && !$user->isDirektur()) {
             $this->filterDepartemen = $user->karyawan->id_departemen;
+        } else {
+            $this->filterDepartemen = null;
         }
 
         $this->tgl_lembur = now('Asia/Jakarta')->toDateString();
@@ -77,8 +85,11 @@ class PengajuanApprovalHub extends Component
         $this->reset(['id_jadwal_pemohon', 'id_pengganti', 'id_jadwal_pengganti', 'alasan_tukar']);
         $this->isTukarShiftModalOpen = true;
 
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
         // Auto-select first upcoming schedule of current user (must be PUBLISHED)
-        $firstJadwal = JadwalShift::where('id_karyawan', Auth::user()->id_karyawan)
+        $firstJadwal = JadwalShift::where('id_karyawan', $user->id_karyawan)
             ->where('status', 'PUBLISHED')
             ->where('tanggal', '>=', now('Asia/Jakarta')->toDateString())
             ->orderBy('tanggal')
@@ -111,7 +122,9 @@ class PengajuanApprovalHub extends Component
         ]);
 
         try {
-            $pemohon = Auth::user()->karyawan;
+            /** @var \App\Models\User $user */
+            $user = Auth::user();
+            $pemohon = $user->karyawan;
             $service->ajukanTukar(
                 $pemohon,
                 $this->id_pengganti,
@@ -139,8 +152,10 @@ class PengajuanApprovalHub extends Component
         ]);
 
         try {
+            /** @var \App\Models\User $user */
+            $user = Auth::user();
             $service->ajukanLembur(
-                Auth::user()->karyawan,
+                $user->karyawan,
                 $this->tgl_lembur,
                 $this->jam_mulai_lembur,
                 $this->jam_selesai_lembur,
@@ -158,7 +173,10 @@ class PengajuanApprovalHub extends Component
     {
         try {
             $tukar = TukarShift::findOrFail($idTukar);
-            $service->responPengganti($tukar, Auth::user(), $setuju);
+            $this->authorize('responPengganti', $tukar);
+            /** @var \App\Models\User $user */
+            $user = Auth::user();
+            $service->responPengganti($tukar, $user, $setuju);
             session()->flash('success', $setuju ? 'Anda menyetujui pertukaran shift. Menunggu konfirmasi Supervisor.' : 'Permohonan tukar shift telah ditolak.');
         } catch (\Exception $e) {
             session()->flash('error', $e->getMessage());
@@ -169,7 +187,10 @@ class PengajuanApprovalHub extends Component
     {
         try {
             $tukar = TukarShift::findOrFail($idTukar);
-            $service->approveSupervisor($tukar, Auth::user(), $setuju);
+            $this->authorize('approveSupervisor', $tukar);
+            /** @var \App\Models\User $user */
+            $user = Auth::user();
+            $service->approveSupervisor($tukar, $user, $setuju);
             session()->flash('success', $setuju ? 'Tukar shift disetujui. Jadwal kedua karyawan telah otomatis diperbarui.' : 'Tukar shift ditolak.');
         } catch (\Exception $e) {
             session()->flash('error', $e->getMessage());
@@ -180,8 +201,25 @@ class PengajuanApprovalHub extends Component
     {
         try {
             $lembur = Lembur::findOrFail($idLembur);
-            $service->approveLembur($lembur, Auth::user(), $setuju);
+            $this->authorize('approve', $lembur);
+            /** @var \App\Models\User $user */
+            $user = Auth::user();
+            $service->approveLembur($lembur, $user, $setuju);
             session()->flash('success', $setuju ? 'Pengajuan lembur telah disetujui.' : 'Pengajuan lembur ditolak.');
+        } catch (\Exception $e) {
+            session()->flash('error', $e->getMessage());
+        }
+    }
+
+    public function approvePengajuan(int $idPengajuan, bool $setuju, PengajuanService $service): void
+    {
+        try {
+            $pengajuan = Pengajuan::with('karyawan.jabatan')->findOrFail($idPengajuan);
+            $this->authorize('approve', $pengajuan);
+            /** @var \App\Models\User $user */
+            $user = Auth::user();
+            $service->approve($pengajuan, $user, $setuju);
+            session()->flash('success', $setuju ? 'Permohonan berhasil diproses.' : 'Permohonan telah ditolak.');
         } catch (\Exception $e) {
             session()->flash('error', $e->getMessage());
         }
@@ -189,42 +227,58 @@ class PengajuanApprovalHub extends Component
 
     public function render()
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
         $isOperator = $user->isOperator();
         $userDept = $user->karyawan?->id_departemen;
 
-        // Query Tukar Shift
-        $tukarQuery = TukarShift::with(['pemohon.departemen', 'pengganti', 'jadwalPemohon.shift', 'jadwalPengganti.shift', 'approver'])
+        // Query Tukar Shift - Eager load approver.karyawan & pengganti.departemen to avoid N+1
+        $tukarQuery = TukarShift::with([
+            'pemohon.departemen',
+            'pengganti.departemen',
+            'jadwalPemohon.shift',
+            'jadwalPengganti.shift',
+            'approver.karyawan',
+        ])
             ->when($isOperator, function ($q) use ($user) {
                 $q->where(function ($sub) use ($user) {
                     $sub->where('id_pemohon', $user->id_karyawan)
                         ->orWhere('id_pengganti', $user->id_karyawan);
                 });
             })
-            ->when(!$isOperator && !$user->isAdminHr() && $userDept, function ($q) use ($userDept) {
+            ->when(!$isOperator && !$user->isAdminHr() && !$user->isDirektur() && $userDept, function ($q) use ($userDept) {
                 $q->whereHas('pemohon', fn($sub) => $sub->where('id_departemen', $userDept));
+            })
+            ->when($this->filterDepartemen, function ($q) {
+                $q->whereHas('pemohon', fn($sub) => $sub->where('id_departemen', $this->filterDepartemen));
             })
             ->when($this->filterStatus === 'MENUNGGU', fn($q) => $q->whereIn('status', ['MENUNGGU_PENGGANTI', 'MENUNGGU_SUPERVISOR']))
             ->when($this->filterStatus === 'DISETUJUI', fn($q) => $q->where('status', 'DISETUJUI'))
             ->when($this->filterStatus === 'DITOLAK', fn($q) => $q->where('status', 'DITOLAK'))
             ->latest();
 
-        // Query Lembur
-        $lemburQuery = Lembur::with(['karyawan.departemen', 'approver'])
+        // Query Lembur - Eager load approver.karyawan
+        $lemburQuery = Lembur::with(['karyawan.departemen', 'approver.karyawan'])
             ->when($isOperator, fn($q) => $q->where('id_karyawan', $user->id_karyawan))
-            ->when(!$isOperator && !$user->isAdminHr() && $userDept, function ($q) use ($userDept) {
+            ->when(!$isOperator && !$user->isAdminHr() && !$user->isDirektur() && $userDept, function ($q) use ($userDept) {
                 $q->whereHas('karyawan', fn($sub) => $sub->where('id_departemen', $userDept));
+            })
+            ->when($this->filterDepartemen, function ($q) {
+                $q->whereHas('karyawan', fn($sub) => $sub->where('id_departemen', $this->filterDepartemen));
             })
             ->when($this->filterStatus === 'MENUNGGU', fn($q) => $q->where('status', 'DIAJUKAN'))
             ->when($this->filterStatus === 'DISETUJUI', fn($q) => $q->where('status', 'DISETUJUI'))
             ->when($this->filterStatus === 'DITOLAK', fn($q) => $q->where('status', 'DITOLAK'))
             ->latest();
 
-        // Query Pengajuan (Cuti/Izin/Sakit)
-        $pengajuanQuery = Pengajuan::with(['karyawan.departemen', 'approver'])
+        // Query Pengajuan (Cuti/Izin/Sakit) - Eager load approver.karyawan
+        $pengajuanQuery = Pengajuan::with(['karyawan.departemen', 'approver.karyawan'])
             ->when($isOperator, fn($q) => $q->where('id_karyawan', $user->id_karyawan))
-            ->when(!$isOperator && !$user->isAdminHr() && $userDept, function ($q) use ($userDept) {
+            ->when(!$isOperator && !$user->isAdminHr() && !$user->isDirektur() && $userDept, function ($q) use ($userDept) {
                 $q->whereHas('karyawan', fn($sub) => $sub->where('id_departemen', $userDept));
+            })
+            ->when($this->filterDepartemen, function ($q) {
+                $q->whereHas('karyawan', fn($sub) => $sub->where('id_departemen', $this->filterDepartemen));
             })
             ->when($this->filterStatus === 'MENUNGGU', fn($q) => $q->where('status', 'DIAJUKAN'))
             ->when($this->filterStatus === 'DISETUJUI', fn($q) => $q->where('status', 'DISETUJUI'))
@@ -252,11 +306,11 @@ class PengajuanApprovalHub extends Component
         // Details of selected item
         $detailItem = null;
         if ($this->selectedType === 'TUKAR_SHIFT' && $this->selectedId) {
-            $detailItem = TukarShift::with(['pemohon.departemen', 'pengganti', 'jadwalPemohon.shift', 'jadwalPengganti.shift', 'approver'])->find($this->selectedId);
+            $detailItem = TukarShift::with(['pemohon.departemen', 'pengganti.departemen', 'jadwalPemohon.shift', 'jadwalPengganti.shift', 'approver.karyawan'])->find($this->selectedId);
         } elseif ($this->selectedType === 'LEMBUR' && $this->selectedId) {
-            $detailItem = Lembur::with(['karyawan.departemen', 'approver'])->find($this->selectedId);
+            $detailItem = Lembur::with(['karyawan.departemen', 'approver.karyawan'])->find($this->selectedId);
         } elseif ($this->selectedType === 'PENGAJUAN' && $this->selectedId) {
-            $detailItem = Pengajuan::with(['karyawan.departemen', 'approver'])->find($this->selectedId);
+            $detailItem = Pengajuan::with(['karyawan.departemen', 'approver.karyawan'])->find($this->selectedId);
         }
 
         // Colleague selection for tukar shift
@@ -265,14 +319,14 @@ class PengajuanApprovalHub extends Component
         $partnerSchedules = collect();
 
         if ($this->isTukarShiftModalOpen) {
-            $myDept = Auth::user()->karyawan?->id_departemen;
+            $myDept = $user->karyawan?->id_departemen;
             $colleagues = Karyawan::where('id_departemen', $myDept)
-                ->where('id_karyawan', '!=', Auth::user()->id_karyawan)
+                ->where('id_karyawan', '!=', $user->id_karyawan)
                 ->where('status_karyawan', 'AKTIF')
                 ->get();
 
             $mySchedules = JadwalShift::with('shift')
-                ->where('id_karyawan', Auth::user()->id_karyawan)
+                ->where('id_karyawan', $user->id_karyawan)
                 ->where('status', 'PUBLISHED')
                 ->where('tanggal', '>=', now('Asia/Jakarta')->toDateString())
                 ->orderBy('tanggal')
@@ -302,6 +356,6 @@ class PengajuanApprovalHub extends Component
             'mySchedules' => $mySchedules,
             'partnerSchedules' => $partnerSchedules,
             'departemens' => Departemen::all(),
-        ])->layout('layouts.app', ['title' => 'Pengajuan & Approval Operasional']);
+        ]);
     }
 }

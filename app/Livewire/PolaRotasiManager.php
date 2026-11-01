@@ -3,6 +3,8 @@
 namespace App\Livewire;
 
 use Livewire\Component;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
 use App\Models\PolaRotasi;
 use App\Models\PolaRotasiDetail;
 use App\Models\GrupKaryawan;
@@ -14,6 +16,8 @@ use App\Services\ScheduleGeneratorService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
+#[Layout('layouts.app')]
+#[Title('Pola Rotasi & Generator Jadwal')]
 class PolaRotasiManager extends Component
 {
     public int $selectedPolaId = 1;
@@ -27,6 +31,8 @@ class PolaRotasiManager extends Component
 
     public function mount(): void
     {
+        $this->authorize('viewAny', PolaRotasi::class);
+
         $pola = PolaRotasi::first();
         if ($pola) {
             $this->selectedPolaId = $pola->id_pola;
@@ -38,10 +44,16 @@ class PolaRotasiManager extends Component
         $this->targetBulan = $now->format('Y-m');
         $this->tanggalMulaiSiklus = $now->startOfMonth()->format('Y-m-d');
 
-        // Default to departemen Produksi if exists, or first departemen
-        $dept = Departemen::where('kode_departemen', 'PRD')->first() ?? Departemen::first();
-        if ($dept) {
-            $this->targetDepartemenId = $dept->id_departemen;
+        /** @var \App\Models\User|null $user */
+        $user = auth()->user();
+        if ($user && ($user->isHod() || $user->isSupervisor())) {
+            $this->targetDepartemenId = $user->karyawan?->id_departemen;
+        } else {
+            // Default to departemen Produksi if exists, or first departemen
+            $dept = Departemen::where('kode_departemen', 'PRD')->first() ?? Departemen::first();
+            if ($dept) {
+                $this->targetDepartemenId = $dept->id_departemen;
+            }
         }
     }
 
@@ -69,6 +81,9 @@ class PolaRotasiManager extends Component
 
     public function cycleShiftCell(int $idGrup, int $hariKe): void
     {
+        $pola = PolaRotasi::findOrFail($this->selectedPolaId);
+        $this->authorize('update', $pola);
+
         $cycle = ['S1' => 'S2', 'S2' => 'S3', 'S3' => 'OFF', 'OFF' => 'GS', 'GS' => 'S1'];
         $current = $this->matrix[$idGrup][$hariKe] ?? 'OFF';
         $next = $cycle[$current] ?? 'S1';
@@ -89,6 +104,9 @@ class PolaRotasiManager extends Component
 
     public function updateShiftCell(int $idGrup, int $hariKe, string $kodeShift): void
     {
+        $pola = PolaRotasi::findOrFail($this->selectedPolaId);
+        $this->authorize('update', $pola);
+
         $this->matrix[$idGrup][$hariKe] = $kodeShift;
 
         PolaRotasiDetail::updateOrCreate(
@@ -112,6 +130,8 @@ class PolaRotasiManager extends Component
             'selectedPolaId' => 'required|exists:pola_rotasi,id_pola',
         ]);
 
+        $this->authorize('generate', [PolaRotasi::class, (int) $this->targetDepartemenId]);
+
         [$tahun, $bulan] = explode('-', $this->targetBulan);
 
         $result = $service->generateBulanan(
@@ -134,9 +154,13 @@ class PolaRotasiManager extends Component
             $q->where('status_karyawan', 'AKTIF');
         }])->get();
         $shifts = Shift::all()->keyBy('kode_shift');
+        /** @var \App\Models\User|null $user */
+        $user = auth()->user();
         $departemens = Departemen::withCount(['karyawan' => function ($q) {
             $q->where('status_karyawan', 'AKTIF');
-        }])->get();
+        }])
+        ->when($user && ($user->isHod() || $user->isSupervisor()), fn($q) => $q->where('id_departemen', $user->karyawan?->id_departemen))
+        ->get();
 
         // Calculate coverage matrix per hari (1 to 8)
         $coverage = [];
@@ -200,6 +224,6 @@ class PolaRotasiManager extends Component
             'coverage' => $coverage,
             'panjangSiklus' => $panjangSiklus,
             'selectedDept' => $selectedDept,
-        ])->layout('layouts.app', ['title' => 'Pola Rotasi & Generator Jadwal']);
+        ]);
     }
 }

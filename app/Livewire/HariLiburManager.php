@@ -3,11 +3,15 @@
 namespace App\Livewire;
 
 use Livewire\Component;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
 use App\Models\HariLibur;
 use App\Models\AuditLog;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
+#[Layout('layouts.app')]
+#[Title('Kelola Hari Libur')]
 class HariLiburManager extends Component
 {
     public string $filterTahun = '';
@@ -21,11 +25,13 @@ class HariLiburManager extends Component
 
     public function mount(): void
     {
+        $this->authorize('viewAny', HariLibur::class);
         $this->filterTahun = (string) now('Asia/Jakarta')->year;
     }
 
     public function openCreateModal(): void
     {
+        $this->authorize('create', HariLibur::class);
         $this->reset(['tanggal', 'keterangan']);
         $this->jenis = 'NASIONAL';
         $this->isEditMode = false;
@@ -35,6 +41,7 @@ class HariLiburManager extends Component
     public function openEditModal(string $tanggal): void
     {
         $libur = HariLibur::findOrFail($tanggal);
+        $this->authorize('update', $libur);
         $this->tanggal = $libur->tanggal->format('Y-m-d');
         $this->keterangan = $libur->keterangan;
         $this->jenis = $libur->jenis;
@@ -54,6 +61,7 @@ class HariLiburManager extends Component
 
         if ($this->isEditMode) {
             $libur = HariLibur::findOrFail($this->tanggal);
+            $this->authorize('update', $libur);
             $dataLama = $libur->toArray();
 
             $libur->update([
@@ -71,6 +79,8 @@ class HariLiburManager extends Component
 
             session()->flash('success', "Hari libur {$this->tanggal} berhasil diperbarui.");
         } else {
+            $this->authorize('create', HariLibur::class);
+
             if (HariLibur::where('tanggal', $this->tanggal)->exists()) {
                 $this->addError('tanggal', 'Tanggal ini sudah terdaftar sebagai hari libur.');
                 return;
@@ -99,6 +109,7 @@ class HariLiburManager extends Component
     public function hapusHariLibur(string $tanggal): void
     {
         $libur = HariLibur::findOrFail($tanggal);
+        $this->authorize('delete', $libur);
         $dataLama = $libur->toArray();
         $libur->delete();
 
@@ -122,6 +133,6 @@ class HariLiburManager extends Component
 
         return view('livewire.hari-libur-manager', [
             'hariLiburs' => $hariLiburs,
-        ])->layout('layouts.app', ['title' => 'Kelola Hari Libur']);
+        ]);
     }
 }

@@ -50,8 +50,8 @@ class MasterDataAndRotationTest extends TestCase
     {
         Livewire::actingAs($this->adminHr)
             ->test(MasterKaryawan::class)
-            ->set('search', 'Ahmad')
-            ->assertSee('Ahmad Fauzi')
+            ->set('search', 'Gilang')
+            ->assertSee('Gilang')
             ->set('search', 'NONEXISTENT_NAME_XYZ')
             ->assertSee('Tidak ada karyawan yang cocok');
     }
@@ -102,7 +102,7 @@ class MasterDataAndRotationTest extends TestCase
 
     public function test_livewire_master_karyawan_toggle_status_and_audit(): void
     {
-        $karyawan = Karyawan::where('id_karyawan', '!=', 'EMP-0001')->firstOrFail();
+        $karyawan = Karyawan::whereNotIn('id_karyawan', ['EMP-0001', 'EMP-0002', 'EMP-0004', 'EMP-0009', 'EMP-0013'])->firstOrFail();
         $initialStatus = $karyawan->status_karyawan;
 
         Livewire::actingAs($this->adminHr)
@@ -118,6 +118,13 @@ class MasterDataAndRotationTest extends TestCase
             'tabel' => 'karyawan',
             'id_record' => $karyawan->id_karyawan,
         ]);
+
+        // Kembalikan ke status awal agar tidak mempengaruhi data live demo
+        Livewire::actingAs($this->adminHr)
+            ->test(MasterKaryawan::class)
+            ->call('toggleStatus', $karyawan->id_karyawan);
+        $karyawan->refresh();
+        $this->assertEquals($initialStatus, $karyawan->status_karyawan);
     }
 
     public function test_pola_rotasi_screen_renders_successfully(): void

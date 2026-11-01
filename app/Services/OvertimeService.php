@@ -68,6 +68,11 @@ class OvertimeService
                 throw new InvalidArgumentException('Pengajuan lembur ini sudah diputuskan.');
             }
 
+            // Validasi: Approver tidak dapat menyetujui pengajuan lembur milik sendiri (Rule 12)
+            if ($approver->id_karyawan === $lembur->id_karyawan) {
+                throw new InvalidArgumentException('Approver tidak dapat memproses pengajuan lembur milik sendiri.');
+            }
+
             // Approver wajib satu departemen jika supervisor
             if ($approver->isSupervisor()) {
                 if ($approver->karyawan?->id_departemen !== $lembur->karyawan?->id_departemen) {

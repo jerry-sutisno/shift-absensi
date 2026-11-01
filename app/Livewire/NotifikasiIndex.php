@@ -4,10 +4,14 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use Livewire\WithPagination;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
 use App\Models\Notifikasi;
 use App\Services\NotificationService;
 use Illuminate\Support\Facades\Auth;
 
+#[Layout('layouts.app')]
+#[Title('Pusat Notifikasi')]
 class NotifikasiIndex extends Component
 {
     use WithPagination;
@@ -38,6 +42,6 @@ class NotifikasiIndex extends Component
         return view('livewire.notifikasi-index', [
             'notifications' => $notifications,
             'unreadCount' => $unreadCount,
-        ])->layout('layouts.app', ['title' => 'Pusat Notifikasi']);
+        ]);
     }
 }

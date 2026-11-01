@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
+use App\Http\Requests\LoginRequest;
 use App\Models\AuditLog;
 
 class AuthController extends Controller
@@ -19,15 +20,9 @@ class AuthController extends Controller
         return view('auth.login');
     }
 
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
-        $credentials = $request->validate([
-            'id_karyawan' => ['required', 'string'],
-            'password' => ['required', 'string'],
-        ], [
-            'id_karyawan.required' => 'ID Karyawan wajib diisi.',
-            'password.required' => 'Kata sandi wajib diisi.',
-        ]);
+        $credentials = $request->validated();
 
         $throttleKey = Str::transliterate(Str::lower($request->input('id_karyawan')) . '|' . $request->ip());
 
@@ -47,6 +42,7 @@ class AuthController extends Controller
         ], $remember)) {
             RateLimiter::clear($throttleKey);
 
+            /** @var \App\Models\User $user */
             $user = Auth::user();
             $user->update(['last_login_at' => now('Asia/Jakarta')]);
 
@@ -74,6 +70,7 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         if (Auth::check()) {
+            /** @var \App\Models\User $user */
             $user = Auth::user();
             AuditLog::catat(
                 'LOGOUT',

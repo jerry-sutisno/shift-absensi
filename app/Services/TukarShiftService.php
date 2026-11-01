@@ -124,6 +124,11 @@ class TukarShiftService
                 throw new InvalidArgumentException('Permohonan belum disepakati kedua operator atau sudah diputuskan.');
             }
 
+            // Validasi: Supervisor tidak boleh menyetujui tukar shift yang melibatkan dirinya sendiri (Rule 12)
+            if ($supervisor->id_karyawan === $tukar->id_pemohon || $supervisor->id_karyawan === $tukar->id_pengganti) {
+                throw new InvalidArgumentException('Supervisor tidak dapat menyetujui tukar shift yang melibatkan dirinya sendiri.');
+            }
+
             // Validasi supervisor departemen
             if (!$supervisor->isAdminHr()) {
                 if ($supervisor->karyawan?->id_departemen !== $tukar->pemohon->id_departemen) {

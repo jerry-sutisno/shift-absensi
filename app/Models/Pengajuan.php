@@ -5,6 +5,42 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id_pengajuan
+ * @property string $id_karyawan
+ * @property string $jenis
+ * @property \Illuminate\Support\Carbon $tgl_mulai
+ * @property \Illuminate\Support\Carbon $tgl_selesai
+ * @property string $alasan
+ * @property string|null $lampiran_path
+ * @property string $status
+ * @property string $tahap
+ * @property int|null $id_approver
+ * @property string|null $catatan_approver
+ * @property \Illuminate\Support\Carbon|null $keputusan_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\User|null $approver
+ * @property-read \App\Models\Karyawan $karyawan
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Pengajuan newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Pengajuan newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Pengajuan query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Pengajuan whereAlasan($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Pengajuan whereCatatanApprover($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Pengajuan whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Pengajuan whereIdApprover($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Pengajuan whereIdKaryawan($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Pengajuan whereIdPengajuan($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Pengajuan whereJenis($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Pengajuan whereKeputusanAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Pengajuan whereLampiranPath($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Pengajuan whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Pengajuan whereTahap($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Pengajuan whereTglMulai($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Pengajuan whereTglSelesai($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Pengajuan whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class Pengajuan extends Model
 {
     protected $table = 'pengajuan';

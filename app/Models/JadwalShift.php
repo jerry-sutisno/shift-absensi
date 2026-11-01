@@ -6,6 +6,39 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
+/**
+ * @property int $id_jadwal
+ * @property string $id_karyawan
+ * @property \Illuminate\Support\Carbon $tanggal
+ * @property string $kode_shift
+ * @property string $sumber
+ * @property string $status
+ * @property int|null $id_pola
+ * @property int|null $dibuat_oleh
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Absensi|null $absensi
+ * @property-read \App\Models\User|null $dibuatOleh
+ * @property-read \App\Models\Karyawan $karyawan
+ * @property-read \App\Models\PolaRotasi|null $polaRotasi
+ * @property-read \App\Models\Shift $shift
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|JadwalShift newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|JadwalShift newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|JadwalShift published()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|JadwalShift query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|JadwalShift visibleFor(\App\Models\User $user)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|JadwalShift whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|JadwalShift whereDibuatOleh($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|JadwalShift whereIdJadwal($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|JadwalShift whereIdKaryawan($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|JadwalShift whereIdPola($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|JadwalShift whereKodeShift($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|JadwalShift whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|JadwalShift whereSumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|JadwalShift whereTanggal($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|JadwalShift whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class JadwalShift extends Model
 {
     protected $table = 'jadwal_shift';

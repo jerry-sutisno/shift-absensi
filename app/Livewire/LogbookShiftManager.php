@@ -4,6 +4,8 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use Livewire\WithPagination;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
 use App\Models\LogbookShift;
 use App\Models\Departemen;
 use App\Models\GrupKaryawan;
@@ -11,6 +13,8 @@ use App\Models\Shift;
 use App\Models\AuditLog;
 use Illuminate\Support\Facades\Auth;
 
+#[Layout('layouts.app')]
+#[Title('Logbook Serah Terima Shift')]
 class LogbookShiftManager extends Component
 {
     use WithPagination;
@@ -31,21 +35,26 @@ class LogbookShiftManager extends Component
 
     public function mount(): void
     {
+        $this->authorize('viewAny', LogbookShift::class);
+
         $this->filterTanggal = now('Asia/Jakarta')->toDateString();
         $this->tanggal = now('Asia/Jakarta')->toDateString();
 
+        /** @var \App\Models\User|null $user */
         $user = Auth::user();
-        if ($user && $user->karyawan) {
+        if ($user && $user->karyawan && !$user->isAdminHr() && !$user->isDirektur()) {
             $this->filterDepartemen = $user->karyawan->id_departemen;
             $this->id_departemen = $user->karyawan->id_departemen;
         } else {
+            $this->filterDepartemen = null;
             $dept = Departemen::first();
-            $this->id_departemen = $dept?->id_departemen;
+            $this->id_departemen = $user?->karyawan?->id_departemen ?? $dept?->id_departemen;
         }
     }
 
     public function openCreateModal(): void
     {
+        $this->authorize('create', LogbookShift::class);
         $this->reset(['ringkasan', 'kendala', 'tindak_lanjut']);
         $this->tanggal = now('Asia/Jakarta')->toDateString();
         $this->isModalOpen = true;
@@ -53,6 +62,14 @@ class LogbookShiftManager extends Component
 
     public function simpanLogbook(): void
     {
+        $this->authorize('create', LogbookShift::class);
+
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        if (!$user->isAdminHr() && $this->id_departemen !== $user->karyawan?->id_departemen) {
+            throw new \Illuminate\Auth\Access\AuthorizationException('Anda hanya dapat mencatat logbook untuk departemen Anda sendiri.');
+        }
+
         $this->validate([
             'tanggal' => 'required|date',
             'kode_shift' => 'required|exists:shift,kode_shift',
@@ -88,7 +105,11 @@ class LogbookShiftManager extends Component
 
     public function render()
     {
-        $logbooks = LogbookShift::with(['shift', 'departemen', 'grup', 'pembuat'])
+        /** @var \App\Models\User|null $user */
+        $user = Auth::user();
+
+        $logbooks = LogbookShift::with(['shift', 'departemen', 'grup', 'pembuat.karyawan'])
+            ->visibleFor($user)
             ->when($this->filterTanggal, fn($q) => $q->where('tanggal', $this->filterTanggal))
             ->when($this->filterDepartemen, fn($q) => $q->where('id_departemen', $this->filterDepartemen))
             ->when($this->filterShift, fn($q) => $q->where('kode_shift', $this->filterShift))
@@ -101,6 +122,6 @@ class LogbookShiftManager extends Component
             'departemens' => Departemen::all(),
             'grups' => GrupKaryawan::all(),
             'shifts' => Shift::where('is_libur', false)->get(),
-        ])->layout('layouts.app', ['title' => 'Logbook Serah Terima Shift']);
+        ]);
     }
 }

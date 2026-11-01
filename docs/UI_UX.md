@@ -2,7 +2,7 @@
 
 Proyek: Tugas Project Manufaktur | Versi 1.0 | 20 Oktober 2026
 
-Catatan: penomoran bab mengikuti dokumen rancangan lengkap (Bab 6 dan Bab 7). Desain visual final ada di project Google Stitch; token desain diambil lewat MCP ke DESIGN.md.
+Catatan: penomoran bab mengikuti dokumen rancangan lengkap sistem (Bab 6 dan Bab 7). Desain antarmuka dirancang untuk kebutuhan operasional pabrik manufaktur.
 
 ## 6. Rancangan UI/UX
 

@@ -10,6 +10,9 @@ class LemburPolicy
     public function before(User $user, string $ability): ?bool
     {
         if ($user->isAdminHr()) {
+            if ($ability === 'approve') {
+                return false;
+            }
             return true;
         }
         return null;
@@ -43,6 +46,11 @@ class LemburPolicy
     public function approve(User $user, Lembur $lembur): bool
     {
         if ($lembur->status !== 'DIAJUKAN') {
+            return false;
+        }
+
+        // Tidak boleh menyetujui pengajuan lembur milik sendiri (Rule 12)
+        if ($user->id_karyawan === $lembur->id_karyawan) {
             return false;
         }
 

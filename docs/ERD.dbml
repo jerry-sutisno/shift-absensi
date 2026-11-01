@@ -1,0 +1,238 @@
+// ERD (Entity Relationship Diagram) - Sistem Manajemen Shift & Absensi Operator
+// Format: DBML (Database Markup Language) - Kompatibel dengan dbdiagram.io, Navicat, & draw.io
+// Proyek: PlantShift OS | Versi 1.0
+
+Project PlantShiftOS {
+  database_type: 'MySQL'
+  Note: 'Sistem Manajemen Shift & Absensi Operator Pabrik Berbasis Laravel & Livewire'
+}
+
+Table departemen {
+  id_departemen int [pk, increment, note: 'PK Auto Increment']
+  nama_departemen varchar(50) [not null, note: 'Personalia, Produksi, Logistik, QCT, Packing']
+  kode_departemen varchar(10) [unique, not null, note: 'PRS, PRD, LGS, QCT, PCKG']
+  deskripsi text [null]
+  created_at timestamp [default: `CURRENT_TIMESTAMP`]
+  updated_at timestamp [null]
+}
+
+Table jabatan {
+  id_jabatan int [pk, increment, note: 'PK Auto Increment']
+  kode_jabatan varchar(20) [null, note: 'Kode asli perusahaan, misal JAB-DIR-01']
+  nama_jabatan varchar(50) [not null]
+  id_departemen int [not null, ref: > departemen.id_departemen]
+  level_jabatan enum [not null, note: 'DIREKTUR, HOD, SUPERVISOR, OPERATOR']
+  created_at timestamp [default: `CURRENT_TIMESTAMP`]
+  updated_at timestamp [null]
+}
+
+Table grup_karyawan {
+  id_grup int [pk, increment, note: 'PK Auto Increment']
+  nama_grup varchar(50) [unique, not null, note: 'Grup A, Grup B, Grup C, Grup D']
+  keterangan text [null]
+  created_at timestamp [null]
+  updated_at timestamp [null]
+}
+
+Table shift {
+  kode_shift varchar(10) [pk, note: 'GS, S1, S2, S3, OFF']
+  nama_shift varchar(50) [not null]
+  jam_masuk time [null]
+  jam_pulang time [null]
+  lintas_hari boolean [default: 0, note: '1 jika melewati tengah malam (S3: 23:00 - 07:00)']
+  toleransi_menit tinyint [default: 10, note: 'Toleransi keterlambatan']
+  warna varchar(7) [note: 'HEX Code visual badge']
+  is_libur boolean [default: 0]
+  is_aktif boolean [default: 1]
+  created_at timestamp [default: `CURRENT_TIMESTAMP`]
+  updated_at timestamp [null]
+}
+
+Table karyawan {
+  id_karyawan varchar(20) [pk, note: 'NIK Perusahaan (EMP-0001)']
+  nama_karyawan varchar(50) [not null]
+  jns_kelamin enum [not null, note: 'L, P']
+  tgl_lahir date [not null]
+  id_departemen int [not null, ref: > departemen.id_departemen]
+  id_jabatan int [not null, ref: > jabatan.id_jabatan]
+  id_grup int [null, ref: > grup_karyawan.id_grup, note: 'NULL = Non-shift / GS']
+  status_karyawan enum [not null, default: 'AKTIF', note: 'AKTIF, NONAKTIF']
+  no_hp varchar(20) [null]
+  created_at timestamp [default: `CURRENT_TIMESTAMP`]
+  updated_at timestamp [null]
+}
+
+Table users {
+  id_user bigint [pk, increment]
+  id_karyawan varchar(20) [unique, not null, ref: - karyawan.id_karyawan]
+  password varchar(255) [not null]
+  pin_absen varchar(255) [null, note: 'Hash PIN 6 digit untuk kiosk']
+  role enum [not null, note: 'ADMIN_HR, DIREKTUR, HOD, SUPERVISOR, OPERATOR']
+  is_active boolean [default: 1]
+  last_login_at datetime [null]
+  remember_token varchar(100) [null]
+  created_at timestamp [null]
+  updated_at timestamp [null]
+}
+
+Table pola_rotasi {
+  id_pola int [pk, increment]
+  nama_pola varchar(50) [not null, note: 'Pola 4 Regu 3 Shift 8 Hari']
+  panjang_siklus_hari tinyint [not null, note: '8 hari siklus']
+  keterangan text [null]
+  is_aktif boolean [default: 1]
+  created_at timestamp [null]
+  updated_at timestamp [null]
+}
+
+Table pola_rotasi_detail {
+  id_detail int [pk, increment]
+  id_pola int [not null, ref: > pola_rotasi.id_pola]
+  id_grup int [not null, ref: > grup_karyawan.id_grup]
+  hari_ke tinyint [not null, note: 'Hari ke-1 s/d 8']
+  kode_shift varchar(10) [not null, ref: > shift.kode_shift]
+  created_at timestamp [null]
+  updated_at timestamp [null]
+
+  indexes {
+    (id_pola, id_grup, hari_ke) [unique]
+  }
+}
+
+Table jadwal_shift {
+  id_jadwal bigint [pk, increment]
+  id_karyawan varchar(20) [not null, ref: > karyawan.id_karyawan]
+  tanggal date [not null, note: 'Tanggal mulai shift']
+  kode_shift varchar(10) [not null, ref: > shift.kode_shift]
+  sumber enum [not null, default: 'POLA', note: 'POLA, MANUAL, TUKAR_SHIFT']
+  status enum [not null, default: 'PUBLISHED', note: 'DRAFT, PUBLISHED']
+  id_pola int [null, ref: > pola_rotasi.id_pola]
+  dibuat_oleh bigint [null, ref: > users.id_user]
+  created_at timestamp [null]
+  updated_at timestamp [null]
+
+  indexes {
+    (id_karyawan, tanggal) [unique]
+    (tanggal, kode_shift)
+  }
+}
+
+Table absensi {
+  id_absensi bigint [pk, increment]
+  id_jadwal bigint [unique, not null, ref: - jadwal_shift.id_jadwal]
+  id_karyawan varchar(20) [not null, ref: > karyawan.id_karyawan]
+  tanggal_shift date [not null, note: 'Tanggal mulai shift acuan']
+  waktu_masuk datetime [null]
+  waktu_pulang datetime [null]
+  metode_masuk enum [null, note: 'KIOSK, MOBILE, MANUAL']
+  metode_pulang enum [null, note: 'KIOSK, MOBILE, MANUAL']
+  status enum [not null, note: 'HADIR, TERLAMBAT, ALPA, IZIN, SAKIT, CUTI, LIBUR']
+  menit_terlambat smallint [default: 0]
+  pulang_cepat boolean [default: 0]
+  menit_kerja smallint [null]
+  catatan text [null]
+  dikoreksi_oleh bigint [null, ref: > users.id_user]
+  created_at timestamp [null]
+  updated_at timestamp [null]
+
+  indexes {
+    (id_karyawan, tanggal_shift) [unique]
+  }
+}
+
+Table pengajuan {
+  id_pengajuan int [pk, increment]
+  id_karyawan varchar(20) [not null, ref: > karyawan.id_karyawan]
+  jenis enum [not null, note: 'CUTI, IZIN, SAKIT']
+  tgl_mulai date [not null]
+  tgl_selesai date [not null]
+  alasan text [not null]
+  lampiran_path varchar(255) [null]
+  status enum [not null, default: 'DIAJUKAN', note: 'DIAJUKAN, DISETUJUI, DITOLAK, DIBATALKAN']
+  tahap enum [not null, default: 'SUPERVISOR', note: 'SUPERVISOR, HOD, SELESAI']
+  id_approver bigint [null, ref: > users.id_user]
+  catatan_approver text [null]
+  keputusan_at datetime [null]
+  created_at timestamp [null]
+  updated_at timestamp [null]
+}
+
+Table tukar_shift {
+  id_tukar int [pk, increment]
+  id_pemohon varchar(20) [not null, ref: > karyawan.id_karyawan]
+  id_pengganti varchar(20) [not null, ref: > karyawan.id_karyawan]
+  id_jadwal_pemohon bigint [not null, ref: > jadwal_shift.id_jadwal]
+  id_jadwal_pengganti bigint [not null, ref: > jadwal_shift.id_jadwal]
+  alasan text [not null]
+  status enum [not null, default: 'MENUNGGU_PENGGANTI', note: 'MENUNGGU_PENGGANTI, MENUNGGU_SUPERVISOR, DISETUJUI, DITOLAK, DIBATALKAN']
+  id_approver bigint [null, ref: > users.id_user]
+  keputusan_at datetime [null]
+  created_at timestamp [null]
+  updated_at timestamp [null]
+}
+
+Table lembur {
+  id_lembur int [pk, increment]
+  id_karyawan varchar(20) [not null, ref: > karyawan.id_karyawan]
+  tanggal date [not null]
+  jam_mulai time [not null]
+  jam_selesai time [not null]
+  alasan text [not null]
+  status enum [not null, default: 'DIAJUKAN', note: 'DIAJUKAN, DISETUJUI, DITOLAK']
+  id_approver bigint [null, ref: > users.id_user]
+  menit_lembur smallint [null]
+  created_at timestamp [null]
+  updated_at timestamp [null]
+}
+
+Table logbook_shift {
+  id_logbook int [pk, increment]
+  tanggal date [not null]
+  kode_shift varchar(10) [not null, ref: > shift.kode_shift]
+  id_departemen int [not null, ref: > departemen.id_departemen]
+  id_grup int [null, ref: > grup_karyawan.id_grup]
+  id_pembuat bigint [not null, ref: > users.id_user]
+  ringkasan text [not null]
+  kendala text [null]
+  tindak_lanjut text [null]
+  created_at timestamp [null]
+  updated_at timestamp [null]
+}
+
+Table hari_libur {
+  tanggal date [pk]
+  keterangan varchar(100) [not null]
+  jenis enum [not null, note: 'NASIONAL, PERUSAHAAN']
+  created_at timestamp [null]
+  updated_at timestamp [null]
+}
+
+Table pengaturan {
+  kunci varchar(50) [pk]
+  nilai varchar(255) [not null]
+  keterangan varchar(255) [null]
+  created_at timestamp [null]
+  updated_at timestamp [null]
+}
+
+Table notifikasi {
+  id_notifikasi int [pk, increment]
+  id_user bigint [not null, ref: > users.id_user]
+  judul varchar(100) [not null]
+  pesan text [not null]
+  url varchar(255) [null]
+  dibaca_at datetime [null]
+  created_at timestamp [default: `CURRENT_TIMESTAMP`]
+}
+
+Table audit_log {
+  id_log bigint [pk, increment]
+  id_user bigint [null, ref: > users.id_user]
+  aksi varchar(50) [not null]
+  tabel varchar(50) [not null]
+  id_record varchar(50) [not null]
+  data_lama json [null]
+  data_baru json [null]
+  ip_address varchar(45) [null]
+  created_at timestamp [default: `CURRENT_TIMESTAMP`]
+}

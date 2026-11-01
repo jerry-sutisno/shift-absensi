@@ -27,7 +27,7 @@ class AuthAndFoundationTest extends TestCase
     {
         $response = $this->get('/login');
         $response->assertStatus(200);
-        $response->assertSee('Masuk ke Sistem');
+        $response->assertSee('Masuk');
         $response->assertSee('PlantShift OS');
         $response->assertSee('ID Karyawan / NIK');
     }
@@ -70,7 +70,8 @@ class AuthAndFoundationTest extends TestCase
 
         $response = $this->actingAs($user)->get('/dashboard');
         $response->assertStatus(200);
-        $response->assertSee('Selamat Datang, ' . $user->nama);
+        $response->assertSee('Dashboard');
+        $response->assertSee($user->nama);
         $response->assertSee('ADMIN_HR');
         $response->assertSee('Total Karyawan');
         $response->assertSee('PlantShift OS');

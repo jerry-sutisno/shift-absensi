@@ -482,7 +482,7 @@ class PlanKeyScenariosTest extends TestCase
         $this->assertEquals('ALPA', $absensi->fresh()->status, 'Status absensi tidak boleh berubah saat koreksi gagal');
 
         // Percobaan 2: Dengan alasan koreksi yang jelas -> BERHASIL & AUDIT LOG TERTULIS
-        $alasanValid = 'Kamera kiosk error saat pergantian shift pagi, verifikasi visual hadir oleh SPV Ahmad Fauzi';
+        $alasanValid = 'Kamera kiosk error saat pergantian shift pagi, verifikasi visual hadir oleh SPV Gilang';
         $hasil = $service->koreksiAbsensi(
             $absensi->id_absensi,
             [

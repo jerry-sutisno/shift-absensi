@@ -10,6 +10,9 @@ class LogbookShiftPolicy
     public function before(User $user, string $ability): ?bool
     {
         if ($user->isAdminHr()) {
+            if ($ability === 'create') {
+                return false;
+            }
             return true;
         }
         return null;
@@ -17,7 +20,7 @@ class LogbookShiftPolicy
 
     public function viewAny(User $user): bool
     {
-        return true;
+        return $user->isSupervisor() || $user->isHod() || $user->isAdminHr() || $user->isDirektur();
     }
 
     public function view(User $user, LogbookShift $logbook): bool
@@ -32,7 +35,6 @@ class LogbookShiftPolicy
 
     public function create(User $user): bool
     {
-        // Supervisor, HOD, and Admin HR can create logbook serah terima
-        return $user->isSupervisor() || $user->isHod() || $user->isAdminHr();
+        return $user->isSupervisor();
     }
 }

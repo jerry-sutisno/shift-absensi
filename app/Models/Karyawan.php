@@ -7,6 +7,50 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property string $id_karyawan
+ * @property string $nama_karyawan
+ * @property string $jns_kelamin
+ * @property \Illuminate\Support\Carbon $tgl_lahir
+ * @property int $id_departemen
+ * @property int $id_jabatan
+ * @property int|null $id_grup
+ * @property string $status_karyawan
+ * @property string|null $no_hp
+ * @property \Illuminate\Support\Carbon $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Absensi> $absensi
+ * @property-read int|null $absensi_count
+ * @property-read \App\Models\Departemen $departemen
+ * @property-read \App\Models\GrupKaryawan|null $grup
+ * @property-read \App\Models\Jabatan $jabatan
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\JadwalShift> $jadwalShift
+ * @property-read int|null $jadwal_shift_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Lembur> $lembur
+ * @property-read int|null $lembur_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Pengajuan> $pengajuan
+ * @property-read int|null $pengajuan_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\TukarShift> $tukarShiftPemohon
+ * @property-read int|null $tukar_shift_pemohon_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\TukarShift> $tukarShiftPengganti
+ * @property-read int|null $tukar_shift_pengganti_count
+ * @property-read \App\Models\User|null $user
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Karyawan newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Karyawan newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Karyawan query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Karyawan whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Karyawan whereIdDepartemen($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Karyawan whereIdGrup($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Karyawan whereIdJabatan($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Karyawan whereIdKaryawan($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Karyawan whereJnsKelamin($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Karyawan whereNamaKaryawan($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Karyawan whereNoHp($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Karyawan whereStatusKaryawan($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Karyawan whereTglLahir($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Karyawan whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class Karyawan extends Model
 {
     protected $table = 'karyawan';
