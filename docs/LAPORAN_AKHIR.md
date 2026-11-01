@@ -1,5 +1,5 @@
 # LAPORAN TUGAS BESAR & DOKUMEN PERANCANGAN SISTEM
-# SISTEM MANAJEMEN SHIFT & ABSENSI OPERATOR (PLANTSHIFT OS)
+# SISTEM INFORMASI MANAJEMEN SHIFT & PRESENSI (SIM-SHIFT DTY INDORAMA)
 
 **Versi:** 1.0  
 **Tanggal:** 21 Oktober 2026  
@@ -45,7 +45,7 @@
 ### 1.1 Latar Belakang & Masalah Lapangan
 Di lingkungan industri manufaktur dengan aktivitas operasional yang beroperasi 24 jam sehari dan 7 hari seminggu, kontinuitas lini produksi sangat bergantung pada penjadwalan regu kerja operator. Sebelum adanya digitalisasi, proses operasional pabrik menghadapi kendala-kendala berikut:
 
-| Kondisi Lapangan (Metode Manual) | Dampak Negatif | Solusi Digital (PlantShift OS) |
+| Kondisi Lapangan (Metode Manual) | Dampak Negatif | Solusi Digital (SIM-Shift DTY Indorama) |
 | :--- | :--- | :--- |
 | **Penyusunan Jadwal Manual** di lembar Excel atau papan tulis fisik | Rawan salah input, shift bentrok, operator kebingungan jadwal, dan perubahan mendadak sulit diinformasikan. | Mesin generator jadwal otomatis berbasis pola rotasi siklus 8 hari dan kalender real-time. |
 | **Absensi Manual** (tanda tangan kertas atau absensi mandiri) | Rawan titip absen, kehilangan data, dan manipulasi pencatatan waktu lembur/hadir. | Absensi berbasis waktu server (`Asia/Jakarta`) dengan validasi shift terjadwal dan mode Kiosk. |
@@ -142,7 +142,7 @@ flowchart LR
         HR(("👤 Admin HR\n(Subani)"))
     end
 
-    subgraph System["PlantShift OS: Lingkup Fungsional"]
+    subgraph System["SIM-Shift DTY Indorama: Lingkup Fungsional"]
         UC01["UC-01: Autentikasi Login & Ganti PIN"]
         UC02["UC-02: Presensi Mandiri / Mesin Kiosk"]
         UC03["UC-03: Melihat Jadwal Shift Pribadi"]
@@ -405,7 +405,7 @@ Hasil Akhir: 47 Passed, 0 Failed, 385 Assertions, Waktu Eksekusi: ~5.8s
 ```
 
 ### 6.2 Kesimpulan & Deliverable Proyek
-Sistem Manajemen Shift & Absensi Operator (**PlantShift OS**) telah berhasil dirancang, diimplementasikan, dan divalidasi secara menyeluruh:
+Sistem Manajemen Shift & Absensi Operator (**SIM-Shift DTY Indorama**) telah berhasil dirancang, diimplementasikan, dan divalidasi secara menyeluruh:
 1. **Kepatuhan Terhadap Basis Data Asli Perusahaan**: Struktur 5 tabel master asli dipertahankan secara utuh nama kolom dan semantiknya, dengan penambahan tabel-tabel transaksi yang saling terintegrasi secara relasional.
 2. **Kesesuaian Aturan Bisnis Manufaktur**: Seluruh aturan domain (waktu server Asia/Jakarta, shift malam S3 lintas hari, pola rotasi 8 hari 4 regu, approval berjenjang, dan audit log) terbukti berfungsi 100% pada automated test suite.
 3. **Kualitas Antarmuka & UX**: Mengadopsi prinsip desain profesional industri, bersih, rapi, dan elegan tanpa dekorasi berlebihan.

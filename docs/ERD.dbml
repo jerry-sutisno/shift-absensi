@@ -1,10 +1,10 @@
 // ERD (Entity Relationship Diagram) - Sistem Manajemen Shift & Absensi Operator
 // Format: DBML (Database Markup Language) - Kompatibel dengan dbdiagram.io, Navicat, & draw.io
-// Proyek: PlantShift OS | Versi 1.0
+// Proyek: SIM-Shift DTY Indorama | Versi 1.0
 
-Project PlantShiftOS {
+Project SIMShiftDTYIndorama {
   database_type: 'MySQL'
-  Note: 'Sistem Manajemen Shift & Absensi Operator Pabrik Berbasis Laravel & Livewire'
+  Note: 'Sistem Informasi Manajemen Shift & Presensi Operator Divisi DTY PT Indo-Rama Synthetics Tbk'
 }
 
 Table departemen {

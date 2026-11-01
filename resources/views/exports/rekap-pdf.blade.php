@@ -94,8 +94,8 @@
 </head>
 <body>
     <div class="header">
-        <h1>PlantShift OS - Laporan Rekapitulasi Absensi Bulanan</h1>
-        <p>Sistem Manajemen Shift & Absensi Operator Manufaktur</p>
+        <h1>SIM-Shift DTY Indorama - Laporan Rekapitulasi Absensi Bulanan</h1>
+        <p>Divisi DTY PT Indo-Rama Synthetics Tbk &bull; Sistem Informasi Manajemen Shift & Presensi</p>
     </div>
 
     <table class="meta-info">

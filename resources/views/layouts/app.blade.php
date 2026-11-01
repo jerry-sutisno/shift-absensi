@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ $title ?? 'Dashboard' }} - PlantShift OS</title>
+    <title>{{ $title ?? 'Dashboard' }} - SIM-Shift DTY Indorama</title>
 
     <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -47,8 +47,8 @@
                             <span class="material-symbols-outlined text-[20px]">precision_manufacturing</span>
                         </div>
                         <div class="flex flex-col min-w-0">
-                            <span class="font-semibold text-[#0F4C81] text-base leading-tight">PlantShift OS</span>
-                            <span class="text-xs text-slate-500">Shift &amp; Absensi</span>
+                            <span class="font-semibold text-[#0F4C81] text-base leading-tight">SIM-Shift DTY</span>
+                            <span class="text-xs text-slate-500">Indorama Synthetics</span>
                         </div>
                     </div>
                     <button @click="sidebarOpen = false" class="lg:hidden text-slate-400 hover:text-slate-600">
@@ -258,7 +258,7 @@
 
             <!-- Main Footer -->
             <footer class="h-12 border-t border-slate-200 bg-white px-4 md:px-8 flex items-center justify-between text-xs text-slate-400">
-                <span>PlantShift OS &bull; Sistem Manajemen Shift &amp; Absensi Operator</span>
+                <span>SIM-Shift DTY Indorama &bull; Sistem Manajemen Shift &amp; Absensi Divisi DTY</span>
                 <span>Waktu Server: Asia/Jakarta</span>
             </footer>
         </div>

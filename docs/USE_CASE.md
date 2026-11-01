@@ -1,5 +1,5 @@
 # Dokumentasi Use Case Diagram (5 Aktor)
-## Sistem Manajemen Shift & Absensi Operator (PlantShift OS)
+## Sistem Manajemen Shift & Absensi Operator (SIM-Shift DTY Indorama)
 
 Dokumen ini mendefinisikan spesifikasi fungsional sistem melalui **Use Case Diagram** yang memetakan interaksi antara **5 Aktor Utama** dengan modul-modul sistem sesuai hak akses berbasis role (Policy) pada spesifikasi aturan domain bisnis (PRD/SRS).
 
@@ -31,7 +31,7 @@ flowchart LR
     end
 
     %% Batas Sistem
-    subgraph System["PlantShift OS - Sistem Manajemen Shift & Absensi"]
+    subgraph System["SIM-Shift DTY Indorama - Sistem Manajemen Shift & Absensi"]
         UC01["UC-01: Login & Autentikasi Role"]
         UC02["UC-02: Absensi Masuk & Pulang (Kiosk/Mobile)"]
         UC03["UC-03: Melihat Jadwal Shift Pribadi"]

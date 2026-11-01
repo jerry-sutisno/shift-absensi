@@ -1,11 +1,11 @@
 # Buku Panduan Pengguna & Skenario Demo (Guidebook)
-## Sistem Manajemen Shift & Absensi Operator (PlantShift OS)
+## Sistem Manajemen Shift & Absensi Operator (SIM-Shift DTY Indorama)
 
 ---
 
 ## 1. Gambaran Umum Sistem
 
-**PlantShift OS** adalah platform manajemen operasional shift pabrik dan absensi terintegrasi yang dirancang untuk industri manufaktur dengan skema rotasi regu 24/7 (3 shift kerja + 1 regu libur rutin).
+**SIM-Shift DTY Indorama** adalah platform manajemen operasional shift pabrik dan absensi terintegrasi yang dirancang untuk Divisi DTY PT Indo-Rama Synthetics Tbk dengan skema rotasi regu 24/7 (3 shift kerja + 1 regu libur rutin).
 
 ### 1.1 Spesifikasi Teknis & Lingkungan
 - **Framework & Backend**: Laravel 11, PHP 8.2+

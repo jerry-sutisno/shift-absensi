@@ -7,10 +7,10 @@
             </div>
             <div>
                 <h1 class="text-xl md:text-2xl font-bold tracking-tight text-white flex items-center gap-2">
-                    <span>PlantShift OS</span>
+                    <span>SIM-Shift DTY Indorama</span>
                     <span class="text-xs px-2 py-0.5 rounded-full bg-sky-500/10 text-sky-400 border border-sky-500/20 font-mono">KIOSK MODE</span>
                 </h1>
-                <p class="text-xs text-slate-400">Terminal Presensi Mandiri Operator Lantai Produksi</p>
+                <p class="text-xs text-slate-400">Terminal Presensi Mandiri Divisi DTY PT Indo-Rama Synthetics Tbk</p>
             </div>
         </div>
 
@@ -252,7 +252,7 @@
         </div>
 
         <div class="text-[11px] text-slate-500 shrink-0">
-            PlantShift OS v1.0 &bull; Standar Pabrik Manufaktur
+            SIM-Shift DTY Indorama v1.0 &bull; Divisi DTY PT Indo-Rama Synthetics Tbk
         </div>
     </footer>
 </div>

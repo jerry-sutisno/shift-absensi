@@ -190,7 +190,7 @@ class RekapBulanan extends Component
             fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF));
 
             // Judul dan Header Informasi
-            fputcsv($output, ['PLANTSHIFT OS - LAPORAN REKAPITULASI ABSENSI BULANAN']);
+            fputcsv($output, ['SIM-SHIFT DTY INDORAMA - LAPORAN REKAPITULASI ABSENSI BULANAN']);
             fputcsv($output, ['Periode', $data['periodeLabel']]);
             fputcsv($output, ['Departemen', $data['departemenLabel']]);
             fputcsv($output, ['Dicetak Oleh', $data['dicetakOleh']]);

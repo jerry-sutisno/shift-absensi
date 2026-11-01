@@ -1,20 +1,20 @@
-# PlantShift OS - Sistem Manajemen Shift & Absensi Operator
+# SIM-Shift DTY Indorama - Sistem Manajemen Shift & Absensi Operator
 
 > **Aplikasi Web Manajemen Shift Kerja Regu & Presensi Kiosk Manufaktur**  
-> Dibangun selaras dengan standar operasional pabrik, aturan bisnis multi-shift rotasi, dan skema database relasional industri.
+> Dibangun selaras dengan standar operasional pabrik, aturan bisnis multi-shift rotasi, dan skema database relasional industri Divisi DTY PT Indo-Rama Synthetics Tbk.
 
 [![Laravel](https://img.shields.io/badge/Laravel-11%2B-FF2D20?style=flat&logo=laravel)](https://laravel.com)
 [![Livewire 3](https://img.shields.io/badge/Livewire-v3-FB70A9?style=flat&logo=livewire)](https://livewire.laravel.com)
 [![Tailwind CSS](https://img.shields.io/badge/TailwindCSS-v3-38B2AC?style=flat&logo=tailwind-css)](https://tailwindcss.com)
 [![PHP](https://img.shields.io/badge/PHP-8.2%2B-777BB4?style=flat&logo=php)](https://php.net)
 [![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?style=flat&logo=mysql)](https://mysql.com)
-[![Tests](https://img.shields.io/badge/Tests-47%20Passed-emerald?style=flat&logo=checkmarx)](tests)
+[![Tests](https://img.shields.io/badge/Tests-69%20Passed-emerald?style=flat&logo=checkmarx)](tests)
 
 ---
 
 ## 1. Deskripsi Proyek
 
-**PlantShift OS** adalah solusi digital untuk mengelola jadwal shift dinamis dan pencatatan absensi operator lini produksi di lingkungan manufaktur. Sistem ini menggantikan metode konvensional (papan tulis, kertas manual, lembar Excel) dengan alur kerja otomatis yang terintegrasi.
+**SIM-Shift DTY Indorama** adalah solusi digital untuk mengelola jadwal shift dinamis dan pencatatan absensi operator lini produksi Divisi DTY PT Indo-Rama Synthetics Tbk. Sistem ini menggantikan metode konvensional (papan tulis, kertas manual, lembar Excel) dengan alur kerja otomatis yang terintegrasi.
 
 ### Pilar Utama Sistem:
 1. **Otomasi Jadwal Shift**: Konfigurasi pola rotasi siklus 8 hari untuk 4 regu kerja (`Grup A, B, C, D`), mencakup General Shift (GS), Shift 1 (Pagi), Shift 2 (Siang), Shift 3 (Malam), dan Libur Rutin (OFF). Generator menghasilkan jadwal bulanan tanpa bentrok.

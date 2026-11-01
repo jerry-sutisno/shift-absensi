@@ -1,5 +1,5 @@
 # Dokumentasi Entity-Relationship Diagram (ERD)
-## Sistem Manajemen Shift & Absensi Operator (PlantShift OS)
+## Sistem Manajemen Shift & Absensi Operator (SIM-Shift DTY Indorama)
 
 Dokumen ini memuat perancangan basis data relasional (ERD) untuk aplikasi Manajemen Shift dan Absensi Operator Pabrik, yang dibangun berdasarkan 5 tabel master perusahaan (hasil penyempurnaan kamus data Excel) dan tabel-tabel transaksi operasional.
 

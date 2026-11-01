@@ -28,7 +28,7 @@ class AuthAndFoundationTest extends TestCase
         $response = $this->get('/login');
         $response->assertStatus(200);
         $response->assertSee('Masuk');
-        $response->assertSee('PlantShift OS');
+        $response->assertSee('SIM-Shift DTY Indorama');
         $response->assertSee('ID Karyawan / NIK');
     }
 
@@ -74,7 +74,7 @@ class AuthAndFoundationTest extends TestCase
         $response->assertSee($user->nama);
         $response->assertSee('ADMIN_HR');
         $response->assertSee('Total Karyawan');
-        $response->assertSee('PlantShift OS');
+        $response->assertSee('SIM-Shift DTY Indorama');
     }
 
     public function test_user_can_logout_successfully(): void

@@ -9,8 +9,8 @@
                 <span class="material-symbols-outlined text-[20px]">precision_manufacturing</span>
             </div>
             <div class="flex flex-col">
-                <span class="font-semibold text-[#0F4C81] text-sm leading-tight">PlantShift OS</span>
-                <span class="text-xs text-slate-500">Shift & Absensi Operator</span>
+                <span class="font-semibold text-[#0F4C81] text-sm leading-tight">SIM-Shift DTY Indorama</span>
+                <span class="text-xs text-slate-500">Shift & Presensi Divisi DTY</span>
             </div>
         </div>
 
