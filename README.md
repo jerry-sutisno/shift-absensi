@@ -1,43 +1,53 @@
 # SIM-Shift DTY Indorama - Sistem Manajemen Shift & Absensi Operator
 
-> **Aplikasi Web Manajemen Shift Kerja Regu & Presensi Kiosk Manufaktur**  
-> Dibangun selaras dengan standar operasional pabrik, aturan bisnis multi-shift rotasi, dan skema database relasional industri Divisi DTY PT Indo-Rama Synthetics Tbk.
+> **Aplikasi Web Manajemen Shift Kerja Regu & Presensi Karyawan Berbasis Waktu Server**  
+> Dibangun selaras dengan standar operasional pabrik manufaktur, aturan bisnis rotasi multi-shift, dan skema database relasional industri Divisi DTY PT Indo-Rama Synthetics Tbk.
 
 [![Laravel](https://img.shields.io/badge/Laravel-11%2B-FF2D20?style=flat&logo=laravel)](https://laravel.com)
 [![Livewire 3](https://img.shields.io/badge/Livewire-v3-FB70A9?style=flat&logo=livewire)](https://livewire.laravel.com)
 [![Tailwind CSS](https://img.shields.io/badge/TailwindCSS-v3-38B2AC?style=flat&logo=tailwind-css)](https://tailwindcss.com)
 [![PHP](https://img.shields.io/badge/PHP-8.2%2B-777BB4?style=flat&logo=php)](https://php.net)
 [![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?style=flat&logo=mysql)](https://mysql.com)
-[![Tests](https://img.shields.io/badge/Tests-69%20Passed-emerald?style=flat&logo=checkmarx)](tests)
 
 ---
 
 ## 1. Deskripsi Proyek
 
-**SIM-Shift DTY Indorama** adalah solusi digital untuk mengelola jadwal shift dinamis dan pencatatan absensi operator lini produksi Divisi DTY PT Indo-Rama Synthetics Tbk. Sistem ini menggantikan metode konvensional (papan tulis, kertas manual, lembar Excel) dengan alur kerja otomatis yang terintegrasi.
+**SIM-Shift DTY Indorama** adalah solusi digital untuk mengelola rotasi jadwal kerja dinamis dan pencatatan absensi karyawan operasional pabrik Divisi DTY PT Indo-Rama Synthetics Tbk. Sistem ini menggantikan metode konvensional (papan tulis manual, buku serah terima fisik, dan lembar Excel) dengan sistem terintegrasi yang akurat dan transparan.
 
-### Pilar Utama Sistem:
-1. **Otomasi Jadwal Shift**: Konfigurasi pola rotasi siklus 8 hari untuk 4 regu kerja (`Grup A, B, C, D`), mencakup General Shift (GS), Shift 1 (Pagi), Shift 2 (Siang), Shift 3 (Malam), dan Libur Rutin (OFF). Generator menghasilkan jadwal bulanan tanpa bentrok.
-2. **Validasi Waktu Server**: Seluruh pencatatan absensi menggunakan waktu otoritatif server (`Asia/Jakarta`). Shift malam (S3) yang melintasi pergantian hari tetap tercatat akurat pada `tanggal_shift` mulai.
-3. **Alur Approval Berjenjang (Policy & Hierarchy)**: Pengajuan cuti, izin, sakit, lembur, dan tukar shift bilateral bilateral diproses berjenjang dari Operator $\rightarrow$ Supervisor $\rightarrow$ HOD (untuk cuti $>3$ hari).
-4. **Audit Log & Akuntabilitas**: Setiap perubahan jadwal, koreksi absensi manual oleh HR, serta keputusan persetujuan tersimpan secara otomatis dalam audit log dengan perbandingan `data_lama` dan `data_baru` dalam format JSON.
-5. **Dashboard & Logbook Handover**: Monitoring kehadiran per shift secara real-time serta pencatatan serah terima kondisi operasional mesin antar shift.
+### ✨ Fitur Unggulan Sistem:
+1. **Presensi Mandiri di Dashboard Personal**:
+   - Setiap karyawan yang login (**Admin HR, Direktur, HOD, Supervisor, maupun Operator**) dapat langsung melakukan **Absen Masuk** dan **Absen Pulang** hanya dengan sekali klik tanpa perlu mengetik NIK/PIN ulang.
+   - Status presensi dihitung otomatis secara *real-time* (Tepat Waktu, Terlambat dengan rincian menit, atau Pulang).
+2. **Otomasi Pola Rotasi Shift 8 Hari (4 Regu)**:
+   - Pengaturan siklus rotasi 8 hari bergantian untuk 4 regu kerja (`Grup A, B, C, D`), mencakup General Shift (GS), Shift 1 (Pagi), Shift 2 (Siang), Shift 3 (Malam), dan Libur Rutin (OFF).
+   - Generator jadwal bulanan instan tanpa bentrok jadwal.
+3. **Validasi Waktu Server & Shift Lintas Hari (*Cross Midnight*)**:
+   - Seluruh pencatatan absensi mengacu mutlak pada waktu server (`Asia/Jakarta`). Shift malam (S3) yang melintasi tengah malam tetap tercatat akurat pada tanggal shift awal.
+4. **Alur Approval Berjenjang & Tukar Shift Bilateral**:
+   - Pengajuan tukar shift dibatasi ketat: hanya bisa bertukar dengan rekan **satu divisi dan setara level jabatan** serta mematuhi batas istirahat minimal antar-shift.
+   - Persetujuan bertingkat: Operator $\rightarrow$ Supervisor $\rightarrow$ HOD (khusus cuti $> 3$ hari).
+5. **Logbook Serah Terima Shift (*Handover*)**:
+   - Supervisor mencatat ringkasan operasional, kendala mesin/material, dan catatan tindak lanjut antar regu jaga.
+6. **Integritas Koreksi Absensi & Audit Log**:
+   - Koreksi absensi manual oleh HR wajib menyertakan alasan tertulis, dan seluruh perubahan tersimpan otomatis di Audit Trail (`data_lama` vs `data_baru` format JSON).
+7. **Laporan & Rekapitulasi Eksekutif**:
+   - Ekspor rekap absensi bulanan ke **PDF** (`dompdf`) dan **Excel** (`maatwebsite/excel`).
 
 ---
 
-## 2. Kebutuhan Sistem & Teknologi Stack
+## 2. Kebutuhan Sistem & Teknologi
 
-- **PHP**: `^8.2` (dengan ekstensi `pdo_mysql`, `mbstring`, `openssl`, `gd`)
-- **Web Server**: Apache / Nginx / Built-in PHP Server (Laragon kompatibel)
+- **PHP**: `^8.2` atau `^8.3` (Ekstensi: `pdo_mysql`, `mbstring`, `openssl`, `gd`)
+- **Web Server**: Apache / Nginx / Laragon
 - **Database**: MySQL 8.0+
 - **Node.js & NPM**: Node v18+ & NPM v9+
 - **Framework & Libraries**:
   - Laravel 11 / 12
   - Livewire 3 & Alpine.js
   - Tailwind CSS & Google Material Symbols
-  - `barryvdh/laravel-dompdf` (Laporan PDF)
+  - `barryvdh/laravel-dompdf` (Laporan Rekap PDF)
   - `maatwebsite/excel` (Export Rekap Excel)
-  - `simplesoftwareio/simple-qrcode` (Kiosk QR Check-in)
 
 ---
 
@@ -48,23 +58,21 @@
 # Masuk ke direktori proyek
 cd d:/laragon/www/shift-absensi
 
-# Instalasi dependensi backend PHP
+# Instalasi dependensi PHP & Assets Frontend
 composer install
-
-# Instalasi dependensi frontend assets
 npm install
 ```
 
 ### B. Konfigurasi Lingkungan (.env)
 ```bash
-# Salin file environment jika belum ada
+# Buat salinan .env jika belum ada
 cp .env.example .env
 
 # Generate Application Encryption Key
 php artisan key:generate
 ```
 
-Pastikan konfigurasi koneksi database di file `.env` telah sesuai:
+Pastikan koneksi database di file `.env` sudah benar:
 ```ini
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
@@ -74,94 +82,59 @@ DB_USERNAME=root
 DB_PASSWORD=
 ```
 
-### C. Migrasi Database & Seeder Data Uji Coba
-Jalankan migrasi untuk membuat 18 tabel relasional beserta seeder lengkap (33 data karyawan, 5 departemen, level jabatan, shift, pola rotasi 8 hari, dan akun demo):
+### C. Migrasi Database & Seeder Lengkap
+Jalankan migrasi untuk membuat 18 tabel relasional beserta data awal (33 data karyawan, 5 departemen, akun demo per role, shift, dan pola rotasi):
 ```bash
 php artisan migrate:fresh --seed
 ```
 
-### D. Kompilasi Frontend & Menjalankan Web Server
+### D. Build Assets & Jalankan Server
 ```bash
-# Build stylesheet & assets Tailwind
+# Build stylesheet Tailwind CSS
 npm run build
 
-# Menjalankan server aplikasi Laravel
+# Menjalankan server lokal Laravel
 php artisan serve
 ```
-Aplikasi kini dapat diakses di browser melalui: **`http://127.0.0.1:8000`**
-
-### E. Menjalankan Job Scheduler (ALPA Otomatis)
-Sistem memiliki scheduler otomatis untuk menandai karyawan yang tidak hadir sebagai `ALPA` setelah batas toleransi shift berakhir:
-```bash
-php artisan schedule:work
-```
+Akses aplikasi melalui browser: **`http://127.0.0.1:8000`** *(atau `http://shift-absensi.test` di Laragon)*.
 
 ---
 
-## 4. Akun Uji Coba per Role
+## 4. Akun Uji Coba per Role (Hak Akses)
 
-Aplikasi dilengkapi tombol cepat login (Quick Demo Login) di halaman login untuk mempermudah pengujian alur hak akses (Role-Based Access Control):
+Di halaman login telah disediakan tombol instan (**Quick Demo Login**) untuk mempermudah demonstrasi sistem:
 
-| Role | NIK / ID Karyawan | Nama Karyawan | Departemen | Kata Sandi | Deskripsi Wewenang |
+| Role | NIK | Nama | Departemen | Password | Deskripsi Wewenang & Tanggung Jawab |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Admin HR** | `EMP-0001` | **Subani** | Personalia (PRS) | `password` | Administrator penuh sistem, kelola master data, generate jadwal, koreksi absensi, audit log. |
-| **Direktur** | `EMP-0002` | **Jerry** | Direksi (PRS) | `password` | Akses monitoring eksekutif lintas seluruh departemen pabrik. |
-| **HOD PRD** | `EMP-0004` | **Satrio** | Produksi (PRD) | `password` | Kepala departemen produksi, approval cuti panjang ($>3$ hari), monitoring performa tim. |
-| **Spv PRD** | `EMP-0009` | **Gilang** | Produksi (PRD) | `password` | Supervisor lini produksi, approval izin/cuti tahap 1, persetujuan tukar shift, input logbook. |
-| **Operator** | `EMP-0013` | **Sarwan** | Produksi (PRD) | `password` | Pengguna lini operasional regu A, presensi mandiri, permohonan tukar shift, izin/cuti. |
+| **Admin HR** | `EMP-0001` | **Subani** | Personalia (PRS) | `password` | Administrator penuh: kelola master data karyawan, konfigurasi pola rotasi, generate jadwal, koreksi absensi ber-alasan, dan audit log. |
+| **Direktur** | `EMP-0002` | **Jerry** | Direksi (PRS) | `password` | Eksekutif: monitoring makro seluruh departemen pabrik, kalender jadwal, dan unduh rekap bulanan lintas divisi. |
+| **HOD PRD** | `EMP-0004` | **Satrio** | Produksi (PRD) | `password` | Kepala Divisi: approval tahap 2 (cuti $>3$ hari), monitoring absensi departemennya, dan audit logbook shift. |
+| **Spv PRD** | `EMP-0009` | **Gilang** | Produksi (PRD) | `password` | Pengawas Lini: approval tahap 1 (izin/cuti $\le 3$ hari, tukar shift), input buku serah terima (Logbook Shift), dan monitoring tim. |
+| **Operator** | `EMP-0013` | **Sarwan** | Produksi (PRD) | `password` | Lini Lapangan: absensi mandiri, cek kalender shift pribadi, ajukan izin/cuti, dan ajukan tukar shift ke sesama operator. |
 
-*(Seluruh akun demo di atas menggunakan kata sandi default: **`password`**)*
+*(PIN default seluruh akun untuk presensi: **`123456`**)*
 
 ---
 
-## 5. Cara Menjalankan Automated Test
+## 5. Menjalankan Automated Test Suite
 
-Sistem telah dilengkapi dengan test suite lengkap berbasis PHPUnit / Pest yang menguji seluruh 10 skenario kunci dari dokumen perancangan (BR-01 s/d BR-15):
-- Otomasi generate pola rotasi & karyawan non-grup (GS)
-- Presensi Shift Malam (S3) melintasi tengah malam
-- Perhitungan keterlambatan dan toleransi menit
-- Validasi presensi di hari OFF / libur
-- Penanganan otomatis ALPA vs Cuti terverifikasi
-- Pencegahan bentrok tukar shift & batas minimal jam istirahat
-- Proteksi otorisasi lintas departemen (Policy)
-- Integritas koreksi absensi tanpa alasan & pencatatan audit log
-
-Jalankan test suite dengan perintah:
+Sistem telah dilengkapi dengan test suite lengkap berbasis PHPUnit yang menguji skenario kunci (BR-01 s/d BR-15):
 ```bash
 php artisan test
 ```
 
-Hasil verifikasi:
-```text
-Pass: 47 passed, 385 assertions, Duration: ~5.8s
-```
-
 ---
 
-## 6. Daftar Layar Utama (Screenshots)
+## 6. Referensi Dokumen Perancangan
 
-Screenshot seluruh modul utama telah didokumentasikan di folder [`docs/screenshots/`](file:///d:/laragon/www/shift-absensi/docs/screenshots):
-- `01_login.png`: Halaman otentikasi login & demo akun
-- `02_dashboard_admin.png`: Dashboard analitik Admin HR & ringkasan shift
-- `03_dashboard_operator.png`: Dashboard personel Operator (jadwal hari ini & logbook)
-- `04_master_karyawan.png`: Manajemen data induk karyawan pabrik
-- `05_pola_rotasi.png`: Konfigurasi siklus 8 hari pola rotasi 4 regu
-- `06_pengajuan_approval.png`: Pusat persetujuan izin, cuti, tukar shift, dan lembur
-- `07_koreksi_absensi.png`: Antarmuka koreksi absensi dengan validasi alasan & audit trail
-- `08_logbook_shift.png`: Catatan serah terima kendala dan tindak lanjut shift
-- `09_hari_libur.png`: Manajemen kalender libur nasional & cuti bersama
-- `10_notifikasi.png`: Pusat notifikasi sistem dan pemberitahuan persetujuan
+Dokumentasi lengkap perancangan sistem tersedia di folder `docs/`:
+- [`docs/BRD.md`](docs/BRD.md): *Business Requirements Document*
+- [`docs/PRD.md`](docs/PRD.md): *Product Requirements Document*
+- [`docs/SRS.md`](docs/SRS.md): *Software Requirements Specification*
+- [`docs/DATABASE_DESIGN.md`](docs/DATABASE_DESIGN.md): Desain Database & Analisis Skema
+- [`docs/ERD.md`](docs/ERD.md): Dokumentasi ERD Mermaid
+- [`docs/USE_CASE.md`](docs/USE_CASE.md): Use Case Diagram (5 Aktor & Matriks Hak Akses)
+- [`docs/LAPORAN_AKHIR.md`](docs/LAPORAN_AKHIR.md): Laporan Akhir Proyek
 
 ---
-
-## 7. Referensi Dokumen Proyek
-
-Dokumentasi lengkap sistem dapat diakses pada folder `docs/`:
-- [`docs/BRD.md`](file:///d:/laragon/www/shift-absensi/docs/BRD.md): Business Requirements Document
-- [`docs/PRD.md`](file:///d:/laragon/www/shift-absensi/docs/PRD.md): Product Requirements Document
-- [`docs/SRS.md`](file:///d:/laragon/www/shift-absensi/docs/SRS.md): Software Requirements Specification
-- [`docs/DATABASE_DESIGN.md`](file:///d:/laragon/www/shift-absensi/docs/DATABASE_DESIGN.md): Desain database dan analisis kesesuaian kamus data Excel
-- [`docs/ERD.md`](file:///d:/laragon/www/shift-absensi/docs/ERD.md): Dokumentasi ERD Mermaid & struktur tabel
-- [`docs/ERD.dbml`](file:///d:/laragon/www/shift-absensi/docs/ERD.dbml): Format DBML untuk visualisasi di [dbdiagram.io](https://dbdiagram.io)
-- [`docs/USE_CASE.md`](file:///d:/laragon/www/shift-absensi/docs/USE_CASE.md): Use Case Diagram dengan 5 Aktor & Matriks Hak Akses
-- [`docs/LAPORAN_AKHIR.md`](file:///d:/laragon/www/shift-absensi/docs/LAPORAN_AKHIR.md): Laporan Komprehensif Deliverable Proyek
+*SIM-Shift DTY Indorama &bull; Divisi DTY PT Indo-Rama Synthetics Tbk*

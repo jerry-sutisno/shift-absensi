@@ -15,13 +15,9 @@
         </div>
 
         <div class="flex items-center gap-2.5">
-            <a href="{{ route('kiosk.absensi') }}" class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-sky-50 hover:bg-sky-100 text-[#0F4C81] border border-sky-200 text-xs font-semibold transition-colors shadow-sm">
-                <span class="material-symbols-outlined text-[16px]">tablet_mac</span>
-                <span>Mode Kiosk Presensi</span>
-            </a>
-            <div class="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-slate-200 text-xs text-slate-600">
-                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                <span>Server Terhubung (Asia/Jakarta)</span>
+            <div class="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-slate-200 text-xs text-slate-600 shadow-2xs">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span class="font-medium">Server Terhubung (Asia/Jakarta)</span>
             </div>
         </div>
     </header>

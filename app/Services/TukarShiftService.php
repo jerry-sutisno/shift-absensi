@@ -26,11 +26,19 @@ class TukarShiftService
         int $idJadwalPengganti,
         string $alasan
     ): TukarShift {
-        $pengganti = Karyawan::findOrFail($idPengganti);
+        $pengganti = Karyawan::with('jabatan')->findOrFail($idPengganti);
+        $pemohon->loadMissing('jabatan');
 
         // BR-10: Kedua karyawan wajib satu departemen
         if ($pemohon->id_departemen !== $pengganti->id_departemen) {
             throw new InvalidArgumentException('Pertukaran shift hanya dapat dilakukan antar karyawan dalam satu departemen.');
+        }
+
+        // Validasi jabatan: Operator hanya boleh bertukar shift dengan sesama Operator, Supervisor dengan sesama Supervisor, dsb.
+        $levelPemohon = $pemohon->jabatan?->level_jabatan;
+        $levelPengganti = $pengganti->jabatan?->level_jabatan;
+        if ($levelPemohon && $levelPengganti && $levelPemohon !== $levelPengganti) {
+            throw new InvalidArgumentException("Pertukaran shift hanya dapat dilakukan dengan rekan yang setingkat ({$levelPemohon}).");
         }
 
         if ($pemohon->id_karyawan === $pengganti->id_karyawan) {

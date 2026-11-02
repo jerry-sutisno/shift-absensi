@@ -6,6 +6,7 @@ use Livewire\Component;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use App\Models\Karyawan;
+use App\Models\Departemen;
 use App\Models\User;
 use App\Models\Shift;
 use App\Models\JadwalShift;
@@ -313,12 +314,12 @@ class KioskPresensi extends Component
             }
         }
 
-        // Demo sample operators for quick punch in/out
-        $demoOperators = Karyawan::with(['departemen', 'jabatan', 'grup'])
-            ->where('status_karyawan', 'AKTIF')
-            ->whereHas('jabatan', fn($j) => $j->where('level_jabatan', 'OPERATOR'))
-            ->take(6)
-            ->get();
+        // Demo sample employees per department for quick punch in/out
+        $departemenList = Departemen::with(['karyawan' => function($q) {
+            $q->where('status_karyawan', 'AKTIF')
+              ->with('jabatan')
+              ->orderBy('id_karyawan');
+        }])->orderBy('id_departemen')->get();
 
         // Presensi terkini (live stream feed)
         $recentAbsensi = Absensi::with(['karyawan.departemen', 'jadwal.shift'])
@@ -333,7 +334,7 @@ class KioskPresensi extends Component
             'currentDate' => $now->translatedFormat('l, d F Y'),
             'currentShift' => $currentShift,
             'shifts' => $shifts,
-            'demoOperators' => $demoOperators,
+            'departemenList' => $departemenList,
             'recentAbsensi' => $recentAbsensi,
         ]);
     }

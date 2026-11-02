@@ -16,6 +16,9 @@
         </div>
     </div>
 
+    <!-- Presensi Mandiri Personal (Otomatis Sesuai Akun Login) -->
+    <livewire:dashboard-presensi-card />
+
     <!-- Quick Stats Cards (No circular colored icon containers, clean metrics) -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <!-- Stat 1 -->

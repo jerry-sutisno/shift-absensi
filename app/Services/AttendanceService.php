@@ -34,23 +34,19 @@ class AttendanceService
 
         // BR-03: tanggal_shift adalah tanggal mulai shift
         $tanggalShift = $jadwal->tanggal->toDateString();
-        $jamMasukShift = Carbon::parse($tanggalShift . ' ' . $shift->jam_masuk);
-        $jamPulangShift = Carbon::parse($tanggalShift . ' ' . $shift->jam_pulang);
+        $jamMasukShift = Carbon::parse($tanggalShift . ' ' . $shift->jam_masuk, 'Asia/Jakarta');
+        $jamPulangShift = Carbon::parse($tanggalShift . ' ' . $shift->jam_pulang, 'Asia/Jakarta');
 
         if ($shift->lintas_hari) {
             $jamPulangShift->addDay();
         }
 
-        // BR-04: Jendela absen masuk dibuka N menit sebelum jam_masuk (default 60 menit)
+        // Absen masuk dibuka N menit sebelum jam_masuk (default 60 menit)
         $jendelaMasukMenit = (int) (Pengaturan::where('kunci', 'jendela_absen_masuk_menit')->value('nilai') ?? 60);
         $bukaAbsen = $jamMasukShift->copy()->subMinutes($jendelaMasukMenit);
 
         if ($waktuServer->lessThan($bukaAbsen)) {
             throw new InvalidArgumentException("Absen masuk belum dibuka. Jendela absen dibuka pada {$bukaAbsen->format('H:i')} WIB.");
-        }
-
-        if ($waktuServer->greaterThan($jamPulangShift)) {
-            throw new InvalidArgumentException("Batas waktu shift telah berakhir pada {$jamPulangShift->format('H:i')} WIB.");
         }
 
         // Cek toleransi keterlambatan (BR-05)
@@ -90,7 +86,7 @@ class AttendanceService
         $shift = $jadwal?->shift;
 
         $tanggalShift = $absensi->tanggal_shift->toDateString();
-        $jamPulangShift = Carbon::parse($tanggalShift . ' ' . $shift->jam_pulang);
+        $jamPulangShift = Carbon::parse($tanggalShift . ' ' . $shift->jam_pulang, 'Asia/Jakarta');
 
         if ($shift && $shift->lintas_hari) {
             $jamPulangShift->addDay();
@@ -134,8 +130,8 @@ class AttendanceService
         $toleransiMenit = (int) (Pengaturan::where('kunci', 'toleransi_terlambat_menit')->value('nilai') ?? 10);
 
         $tanggalShift = $jadwal->tanggal->toDateString();
-        $jamMasukShift = Carbon::parse($tanggalShift . ' ' . $shift->jam_masuk);
-        $jamPulangShift = Carbon::parse($tanggalShift . ' ' . $shift->jam_pulang);
+        $jamMasukShift = Carbon::parse($tanggalShift . ' ' . $shift->jam_masuk, 'Asia/Jakarta');
+        $jamPulangShift = Carbon::parse($tanggalShift . ' ' . $shift->jam_pulang, 'Asia/Jakarta');
 
         if ($shift->lintas_hari) {
             $jamPulangShift->addDay();

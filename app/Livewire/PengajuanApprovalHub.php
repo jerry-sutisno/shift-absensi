@@ -320,9 +320,15 @@ class PengajuanApprovalHub extends Component
 
         if ($this->isTukarShiftModalOpen) {
             $myDept = $user->karyawan?->id_departemen;
-            $colleagues = Karyawan::where('id_departemen', $myDept)
+            $myLevel = $user->karyawan?->jabatan?->level_jabatan;
+
+            $colleagues = Karyawan::with('jabatan')
+                ->where('id_departemen', $myDept)
                 ->where('id_karyawan', '!=', $user->id_karyawan)
                 ->where('status_karyawan', 'AKTIF')
+                ->when($myLevel, function ($q) use ($myLevel) {
+                    $q->whereHas('jabatan', fn($j) => $j->where('level_jabatan', $myLevel));
+                })
                 ->get();
 
             $mySchedules = JadwalShift::with('shift')

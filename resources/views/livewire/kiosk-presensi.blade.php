@@ -351,24 +351,46 @@
         </div>
     </main>
 
-    <!-- Bottom Dock: Quick Demo Operator Bar -->
-    <footer class="relative z-10 pt-3 border-t border-slate-200/90 flex flex-col sm:flex-row items-center justify-between gap-2.5 text-xs text-slate-500">
-        <div class="flex items-center gap-2 flex-wrap">
-            <span class="font-bold text-slate-600 text-[11px]">⚡ Demo Cepat Operator (PIN: 123456):</span>
-            @foreach($demoOperators as $demo)
-                <button 
-                    wire:click="pilihKaryawanDemo('{{ $demo->id_karyawan }}')" 
-                    type="button" 
-                    class="px-2.5 py-1 rounded-lg bg-white hover:bg-sky-50 text-slate-700 border border-slate-200 text-[11px] transition-colors cursor-pointer flex items-center gap-1.5 active:scale-95 shadow-sm hover:border-sky-300"
-                >
-                    <span class="font-mono font-bold text-[#0F4C81]">{{ $demo->id_karyawan }}</span>
-                    <span class="font-medium">{{ $demo->nama_karyawan }}</span>
-                </button>
-            @endforeach
+    <!-- Bottom Dock: Quick Demo Per Departemen Bar -->
+    <footer class="relative z-10 pt-3 border-t border-slate-200/90 flex flex-col gap-2 text-xs text-slate-500">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <span class="font-bold text-slate-700 text-[12px] flex items-center gap-1.5">
+                <span class="text-amber-500 font-bold">⚡ Demo Cepat Presensi (PIN: 123456)</span>
+                <span class="text-[10px] text-slate-400 font-normal">| Pilih karyawan per departemen di bawah:</span>
+            </span>
+            <div class="text-[11px] text-slate-400 shrink-0 font-medium">
+                SIM-Shift DTY Indorama v1.0 &bull; Divisi DTY PT Indo-Rama Synthetics Tbk
+            </div>
         </div>
 
-        <div class="text-[11px] text-slate-400 shrink-0 font-medium">
-            SIM-Shift DTY Indorama v1.0 &bull; Divisi DTY PT Indo-Rama Synthetics Tbk
+        <div class="flex items-center gap-2 overflow-x-auto pb-1 max-w-full scrollbar-thin">
+            @foreach($departemenList as $dept)
+                @if($dept->karyawan->isNotEmpty())
+                    <div class="flex items-center gap-1 bg-white border border-slate-200/90 rounded-xl p-1.5 shadow-xs shrink-0">
+                        <span class="px-2 py-0.5 rounded-md bg-sky-50 text-[#0F4C81] border border-sky-100 font-bold text-[10px] uppercase tracking-wider">
+                            {{ $dept->kode_departemen }}
+                        </span>
+                        <div class="flex items-center gap-1">
+                            @foreach($dept->karyawan->take(3) as $demo)
+                                <button 
+                                    wire:click="pilihKaryawanDemo('{{ $demo->id_karyawan }}')" 
+                                    type="button" 
+                                    title="{{ $demo->jabatan?->nama_jabatan }}"
+                                    class="px-2 py-1 rounded-lg bg-slate-50 hover:bg-sky-50 hover:text-[#0F4C81] text-slate-700 border border-slate-200/80 text-[11px] transition-all cursor-pointer flex items-center gap-1 active:scale-95 shadow-2xs hover:border-sky-300"
+                                >
+                                    <span class="font-mono font-bold text-slate-500 text-[10px]">{{ $demo->id_karyawan }}</span>
+                                    <span class="font-medium truncate max-w-[85px]">{{ $demo->nama_karyawan }}</span>
+                                    @if($demo->jabatan?->level_jabatan && $demo->jabatan->level_jabatan !== 'OPERATOR')
+                                        <span class="text-[9px] px-1 py-0.2 rounded bg-amber-100 text-amber-800 font-semibold leading-tight">
+                                            {{ substr($demo->jabatan->level_jabatan, 0, 3) }}
+                                        </span>
+                                    @endif
+                                </button>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+            @endforeach
         </div>
     </footer>
 </div>
