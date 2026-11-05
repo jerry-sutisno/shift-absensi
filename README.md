@@ -1,15 +1,3 @@
-PEDOMAN PENGGUNAAN & PANDUAN DEMO APLIKASI
-SIM-Shift DTY Indorama • Sistem Manajemen Shift & Presensi Pabrik
-1. CARA MENJALANKAN APLIKASI (PERSIAPAN SEBELUM DEMO)
-Pastikan aplikasi dijalankan dengan langkah-langkah mudah berikut:
-a.	Langkah 1 (Laragon): Buka Laragon, lalu klik tombol 'Start All' (pastikan MySQL & Apache/Nginx menyala hijau).
-b.	Langkah 2 (Buka Terminal): Buka terminal di folder project (d:\laragon\www\shift-absensi).
-c.	Langkah 3 (Jalankan Server): Ketik perintah: php artisan serve lalu tekan Enter.
-d.	Langkah 4 (Buka Browser): Buka browser Chrome/Edge dan ketik alamat: http://127.0.0.1:8000 (atau http://shift-absensi.test).
-e.	Reset Database (Opsional): Jika ingin membersihkan database agar kembali bersih seperti semula sebelum demo, jalankan: php artisan migrate:fresh --seed
-
----
-
 ## Fitur Utama
 
 1. **Absensi Mandiri di Dashboard**:
@@ -79,9 +67,17 @@ Di halaman login sudah ada tombol instan **Quick Demo Login**. Tinggal klik tomb
 
 ---
 
-## Dokumen Tambahan
-Dokumentasi teknis ada di folder `docs/`:
-- `docs/BRD.md` & `docs/PRD.md` (Kebutuhan Bisnis & Produk)
-- `docs/DATABASE_DESIGN.md` & `docs/ERD.md` (Desain Database & Relasi Tabel)
-- `docs/USE_CASE.md` (Diagram Use Case & Hak Akses)
-- `docs/LAPORAN_AKHIR.md` (Laporan Proyek)
+## SKENARIO ALUR DEMO PRESENTASI (PEMBAGIAN 3 ORANG)
+Orang 1: Pembuka & Konsep (Latar Belakang & Arsitektur)
+- Poin Bicara 1: Jelaskan latar belakang: Masalah operasional pabrik Divisi DTY PT Indo-Rama Synthetics Tbk yang sebelumnya manual (kertas, papan tulis, rawan bentrok jadwal rotasi shift).
+- Poin Bicara 2: Perkenalkan SIM-Shift: Solusi berbasis Laravel 11, Livewire 3, dan Tailwind CSS dengan basis waktu server.
+- Poin Bicara 3: Tunjukkan skema pola rotasi 4 regu 8 hari yang adil dan otomatis
+
+Orang 2: Driver Demo 1 (Operator & Supervisor)
+- Simulasi Operator (Sarwan): Login sebagai Sarwan -> Perlihatkan Card Presensi -> Klik 'Absen Masuk' -> Tunjukkan jadwal kalender -> Ajukan Tukar Shift dengan rekan se-divisi.
+- Simulasi Supervisor (Gilang): Login sebagai Gilang -> Buka 'Antrean Approval' -> Setujui pengajuan tukar shift -> Buka 'Logbook Shift' -> Tunjukkan catatan serah terima mesin.
+
+Orang 3: Driver Demo 2 & Penutup (HOD, Direktur & Admin HR)
+- Simulasi HOD & Direktur: Login HOD (Satrio) untuk approval cuti panjang & pantau tim. Lalu login Direktur (Jerry) untuk perlihatkan Dashboard Eksekutif makro lintas 5 departemen.
+- Simulasi Admin HR (Subani): Perlihatkan menu Koreksi Absensi (wajib alasan), cek riwayat Audit Log, dan unduh Rekap Bulanan dalam format PDF / Excel
+- Penutup: Tegaskan kesimpulan sistem dan buka sesi tanya jawab (Q&A).
