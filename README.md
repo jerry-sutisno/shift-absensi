@@ -1,8 +1,12 @@
-# SIM-Shift DTY Indorama - Sistem Manajemen Shift & Absensi
-
-Aplikasi web untuk pengelolaan jadwal shift kerja regu dan absensi karyawan Divisi DTY PT Indo-Rama Synthetics Tbk.
-
-Dibuat menggunakan **Laravel 11**, **Livewire 3**, **Tailwind CSS**, dan **MySQL**.
+PEDOMAN PENGGUNAAN & PANDUAN DEMO APLIKASI
+SIM-Shift DTY Indorama • Sistem Manajemen Shift & Presensi Pabrik
+1. CARA MENJALANKAN APLIKASI (PERSIAPAN SEBELUM DEMO)
+Pastikan aplikasi dijalankan dengan langkah-langkah mudah berikut:
+a.	Langkah 1 (Laragon): Buka Laragon, lalu klik tombol 'Start All' (pastikan MySQL & Apache/Nginx menyala hijau).
+b.	Langkah 2 (Buka Terminal): Buka terminal di folder project (d:\laragon\www\shift-absensi).
+c.	Langkah 3 (Jalankan Server): Ketik perintah: php artisan serve lalu tekan Enter.
+d.	Langkah 4 (Buka Browser): Buka browser Chrome/Edge dan ketik alamat: http://127.0.0.1:8000 (atau http://shift-absensi.test).
+e.	Reset Database (Opsional): Jika ingin membersihkan database agar kembali bersih seperti semula sebelum demo, jalankan: php artisan migrate:fresh --seed
 
 ---
 
